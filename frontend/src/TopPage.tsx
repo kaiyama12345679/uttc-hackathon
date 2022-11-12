@@ -9,8 +9,6 @@ const URL = "http://localhost:8000/api";
 let cnt = 0;
 type Props = {
     Info: userInfo[]
-    luid: string
-    setLuid: React.Dispatch<React.SetStateAction<string>>
 }
 export const UserId = createContext("");
 const TopPage = (props: Props) => {

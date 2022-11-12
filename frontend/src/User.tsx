@@ -3,16 +3,11 @@ import { useEffect } from "react";
 import {Link} from "react-router-dom";
 import Button from "@mui/material/Button";
 const URL = "";
-import {useContext} from "react";
-import {UserId} from "./TopPage";
 import {useLocation} from "react-router-dom";
-type Props = {
-    userId: string
-};
 type state = {
     id: string
 }
-const UserProfile = (props: Props) => {
+const UserProfile = () => {
     const location = useLocation();
     const messageState = location.state as state;
     return (

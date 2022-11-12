@@ -68,9 +68,9 @@ function App() {
       <Header />
       <BrowserRouter>
       <Routes>
-        <Route path = "/" element = {<TopPage  Info={Info}   luid={luid} setLuid={setLuid}/>} />
+        <Route path = "/" element = {<TopPage  Info={Info}   />} />
         <Route path = "/tameshi" element = {<Login />}/>
-        <Route path = "/user" element = {<UserProfile  userId={luid}/>}/>
+        <Route path = "/user" element = {<UserProfile  />}/>
       </Routes>
     </BrowserRouter>
     </div>
