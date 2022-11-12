@@ -13,15 +13,17 @@ import Login from "./Login";
 import TopPage from "./TopPage";
 import UserProfile from "./User";
 const URL = "http://localhost:8000/api";
-type userInfo = {
+
+let cnt = 0;
+export type userInfo = {
   id: string,
   name: string,
   age: number,
 }
 let Info: userInfo[];
 function App() {
-  const [tmp, setTmp] = useState("")
-  const [luid, setLuid] = useState("");
+  const [update, setUpdate] = useState<boolean>(false);
+  const [luid, setLuid] = useState<string>("");
   useEffect(
     () => {
       const get = async () => {
@@ -39,10 +41,12 @@ function App() {
         console.log("readed");
         Info = info;
         console.table(Info);
-        setTmp(tmp + "_");
+        setUpdate(update? false: true);
       }
       get();
     }, []);
+
+    
     
     const Header = () => {
       return (
@@ -52,7 +56,6 @@ function App() {
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 へっだー
               </Typography>
-              <Button color="inherit">Login</Button>
             </Toolbar>
           </AppBar>
         </Box>
@@ -65,9 +68,9 @@ function App() {
       <Header />
       <BrowserRouter>
       <Routes>
-        <Route path = "/" element = {<TopPage  Info={Info} luid={luid} setLuid={setLuid}/>} />
+        <Route path = "/" element = {<TopPage  Info={Info}   luid={luid} setLuid={setLuid}/>} />
         <Route path = "/tameshi" element = {<Login />}/>
-        <Route path = "/user" element = {<UserProfile luid={luid}/>}/>
+        <Route path = "/user" element = {<UserProfile  userId={luid}/>}/>
       </Routes>
     </BrowserRouter>
     </div>

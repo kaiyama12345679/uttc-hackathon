@@ -1,35 +1,34 @@
-import React from "react";
-import {Link} from "react-router-dom";
+import React, { useEffect } from "react";
+import {Link, Router} from "react-router-dom";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-
+import { userInfo } from "./App";
+import {createContext} from "react";
+import { useNavigate } from "react-router-dom";
 const URL = "http://localhost:8000/api";
-type userInfo = {
-    id: string,
-    name: string,
-    age: number,
-  }
+let cnt = 0;
 type Props = {
     Info: userInfo[]
     luid: string
     setLuid: React.Dispatch<React.SetStateAction<string>>
 }
+export const UserId = createContext("");
 const TopPage = (props: Props) => {
+    const navigate = useNavigate();
     if (props.Info == null ) {
         return (
             <div>not readed</div>
         )
     }
-    const onSubmit = async (userId: string, submit: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      submit.preventDefault();
-      console.log("toppage luid", props.luid);
-      props.setLuid(userId);
-
-    }
+    const onSubmit = async (id: string) => {
+      console.log("onSubmit");
+      navigate("/user", {state: {id: id}});
+      console.log("cnt: " + cnt);
+    };
     
     const userList = props.Info.map((user) => {
         return (
-          <Box
+          <Box className="user" key={user.id}
           sx={{
             width: 200,
             height: 100,
@@ -43,7 +42,7 @@ const TopPage = (props: Props) => {
           <div key={user.id}>
             <p>名前:{user.name}</p>
             <p>年齢:{user.age}</p>
-            <Button component={Link} to="/user" variant="contained" onClick={(e: any) => onSubmit(user.id, e)}></Button>
+            <Button type="submit" color="success"  variant="contained" onClick={() => onSubmit(user.id)}>ユーザー選択</Button>
           </div>
         </ Box>  
       )});
@@ -55,7 +54,7 @@ const TopPage = (props: Props) => {
           {userList}
         </div>
         </ul>
-        <Button component={Link} to="/tameshi" variant="contained">
+        <Button  component={Link} to="/tameshi" variant="contained">
             Link
         </Button>
       </div>
