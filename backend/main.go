@@ -1,16 +1,11 @@
 package main
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -35,34 +30,6 @@ func init() {
 	mysqlDatabase := os.Getenv("MYSQL_DATABASE")
 
 	connStr := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", mysqlUser, mysqlPwd, mysqlHost, mysqlDatabase)
-	// (OPTIONAL) Configure SSL certificates
-	// For deployments that connect directly to a Cloud SQL instance without
-	// using the Cloud SQL Proxy, configuring SSL certificates will ensure the
-	// connection is encrypted.
-	dbRootCert := os.Getenv("DB_ROOT_CERT") // e.g., '/path/to/my/server-ca.pem'
-	var (
-		dbCert = os.Getenv("DB_CERT") // e.g. '/path/to/my/client-cert.pem'
-		dbKey  = os.Getenv("DB_KEY")  // e.g. '/path/to/my/client-key.pem'
-	)
-	pool := x509.NewCertPool()
-	pem, err := ioutil.ReadFile(dbRootCert)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if ok := pool.AppendCertsFromPEM(pem); !ok {
-		log.Fatal(fmt.Errorf("err"))
-	}
-	cert, err := tls.LoadX509KeyPair(dbCert, dbKey)
-	if err != nil {
-		log.Fatal(err)
-	}
-	mysql.RegisterTLSConfig("cloudsql", &tls.Config{
-		RootCAs:               pool,
-		Certificates:          []tls.Certificate{cert},
-		InsecureSkipVerify:    true,
-		VerifyPeerCertificate: verifyPeerCertFunc(pool),
-	})
-	connStr += "&tls=cloudsql"
 
 	// dbPool is the pool of database connections.
 	dbPool, err := sql.Open("mysql", connStr)
@@ -76,25 +43,6 @@ func init() {
 	db = dbPool
 	fmt.Println("Connected")
 
-}
-
-func verifyPeerCertFunc(pool *x509.CertPool) func([][]byte, [][]*x509.Certificate) error {
-	return func(rawCerts [][]byte, _ [][]*x509.Certificate) error {
-		if len(rawCerts) == 0 {
-			return errors.New("no certificates available to verify")
-		}
-
-		cert, err := x509.ParseCertificate(rawCerts[0])
-		if err != nil {
-			return err
-		}
-
-		opts := x509.VerifyOptions{Roots: pool}
-		if _, err = cert.Verify(opts); err != nil {
-			return err
-		}
-		return nil
-	}
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -135,6 +83,32 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(bytes)
 
+	case http.MethodPost:
+		tx, err := db.Begin()
+
+		if err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+
+		var u string
+
+		if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		//rows, err := tx.Query("SELECT * from user WHERE id = %s", u)
+		bytes, err := json.Marshal(u)
+		if err != nil {
+			fmt.Println(err)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(bytes)
+
+		return
 	default:
 		return
 	}
