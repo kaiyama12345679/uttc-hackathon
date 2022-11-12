@@ -3,10 +3,16 @@ import './App.css';
 import { useState } from 'react';
 import { BrowserRouter , Routes, Route, Link} from 'react-router-dom';
 import Login from "./Login"
-const URL = "sample";
+const URL = "http://localhost:8000/api";
+type userInfo = {
+  id: string,
+  name: string,
+  age: number,
+}
+
 function App() {
 
-
+  let Info: userInfo[];
   useEffect(
     () => {
       const get = async () => {
@@ -20,18 +26,20 @@ function App() {
             },
           }
         );
-        const info = await response.json();
+        const info: userInfo[] = await response.json();
         console.log("readed");
+        Info = info;
+        console.table(Info);
       }
-    }
-  );
+      get();
+    }, []);
   const Hoge = () => {
     return (
       <div>
         <h1>トップページ</h1>
         <div>
           <h1>ユーザーリスト</h1>
-
+          <h2>{String(Info)}</h2>
         </div>
         <Link to = "/tameshi">tameshi</Link>
       </div>
