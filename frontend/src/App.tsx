@@ -11,6 +11,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { BrowserRouter , Routes, Route} from 'react-router-dom';
 import Login from "./Login";
 import TopPage from "./TopPage";
+import UserProfile from "./User";
 const URL = "http://localhost:8000/api";
 type userInfo = {
   id: string,
@@ -20,7 +21,7 @@ type userInfo = {
 let Info: userInfo[];
 function App() {
   const [tmp, setTmp] = useState("")
-  const [luser, setLuser] = useState("");
+  const [luid, setLuid] = useState("");
   useEffect(
     () => {
       const get = async () => {
@@ -64,8 +65,9 @@ function App() {
       <Header />
       <BrowserRouter>
       <Routes>
-        <Route path = "/" element = {<TopPage  Info={Info}/>} />
+        <Route path = "/" element = {<TopPage  Info={Info} luid={luid} setLuid={setLuid}/>} />
         <Route path = "/tameshi" element = {<Login />}/>
+        <Route path = "/user" element = {<UserProfile luid={luid}/>}/>
       </Routes>
     </BrowserRouter>
     </div>

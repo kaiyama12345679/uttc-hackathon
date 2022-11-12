@@ -11,6 +11,8 @@ type userInfo = {
   }
 type Props = {
     Info: userInfo[]
+    luid: string
+    setLuid: React.Dispatch<React.SetStateAction<string>>
 }
 const TopPage = (props: Props) => {
     if (props.Info == null ) {
@@ -18,23 +20,11 @@ const TopPage = (props: Props) => {
             <div>not readed</div>
         )
     }
-    const onSubmit = async (submit: React.MouseEvent<HTMLButtonElement, MouseEvent>, userId: string) => {
+    const onSubmit = async (userId: string, submit: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       submit.preventDefault();
+      console.log("toppage luid", props.luid);
+      props.setLuid(userId);
 
-      const response = await fetch(
-        URL,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application-json"
-          },
-          body: JSON.stringify(
-            userId
-          )
-        }
-      );
-      console.log("response status:", response.status);
-      
     }
     
     const userList = props.Info.map((user) => {
@@ -53,7 +43,7 @@ const TopPage = (props: Props) => {
           <div key={user.id}>
             <p>名前:{user.name}</p>
             <p>年齢:{user.age}</p>
-            <Button component={Link} to="/user" variant="contained"></Button>
+            <Button component={Link} to="/user" variant="contained" onClick={(e: any) => onSubmit(user.id, e)}></Button>
           </div>
         </ Box>  
       )});
