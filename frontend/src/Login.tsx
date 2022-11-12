@@ -1,6 +1,8 @@
 import React from "react";
 import { useState } from "react";
 import {Link} from "react-router-dom";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
 
 const Login = () => {
     const [tweet, setTweet] = useState("");
@@ -11,9 +13,11 @@ const Login = () => {
     return (
         <div className="LoginForm">
             <h1>入力</h1>
-            <input type="text"  value = {tweet} placeholder="文章を入力" onChange={myChange}/>
+            <TextField id="filled-basic" placeholder="文章を入力" variant="filled" value={tweet} onChange={myChange}/>
             <h1>{tweet}</h1>
-            <Link to = "/">戻る</Link>
+            <Button component={Link} to="/" variant="contained">
+            Link
+          </Button>
         </div>
     )
 };
