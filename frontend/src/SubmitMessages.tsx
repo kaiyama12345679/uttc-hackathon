@@ -89,10 +89,9 @@ const SubmitMessage = (props: Props) => {
             id="panel1bh-header"
             >
             <Typography sx={{ width: '33%', flexShrink: 0 }}>
-                送信先: {To()
-            }さんに
+                送信先: <b>{To()}</b>さんに
             </Typography>
-            <Typography sx={{ color: 'text.secondary' }}>{message.point}ポイントを贈りました！</Typography>
+            <Typography sx={{ color: 'text.secondary' }}><b>{message.point}</b> ポイントを贈りました！</Typography>
             </AccordionSummary>
             <AccordionDetails>
             <Typography>

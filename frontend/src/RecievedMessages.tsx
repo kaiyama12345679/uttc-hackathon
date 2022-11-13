@@ -89,10 +89,9 @@ const RecievedMessage = (props: Props) => {
             id="panel1bh-header"
             >
             <Typography sx={{ width: '33%', flexShrink: 0 }}>
-                贈り主: {From()
-            }さんから
+                贈り主: <b>{From()}</b>さんから
             </Typography>
-            <Typography sx={{ color: 'text.secondary' }}>{message.point}ポイントが贈られました！</Typography>
+            <Typography sx={{ color: 'text.secondary' }}><b>{message.point}</b>ポイントが贈られました！</Typography>
             </AccordionSummary>
             <AccordionDetails>
             <Typography>
