@@ -15,6 +15,10 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { userInfo } from "./App";
 import SubmitForm from "./post/MessagePost";
+import Container from '@mui/material/Container';
+import "./App.css";
+import SubmitMessage from "./SubmitMessages";
+import RecievedMessage from "./RecievedMessages";
 export type message = {
     id: string,
     from_id: string,
@@ -67,90 +71,19 @@ function TabPanel(props: TabPanelProps) {
 const UserProfile = (props: Props) => {
     const [value, setValue] = useState(0);
     const theme = useTheme();
-    const [update, setUpdate] = useState<boolean>(false);
-    const [expanded, setExpanded] = React.useState<string | false>(false);
-
-    const handleAcChange =
-        (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-        setExpanded(isExpanded ? panel : false);
-        };
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
     };
     const location = useLocation();
     const messageState = location.state as state;
-    useEffect(
-        () => {
-            console.log(messageState.id);
-          const get = async () => {
-            console.log("message init");
-            const response = await fetch(
-              URL,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                //   "userid": messageState.id,
-                },
-                body: JSON.stringify(
-                    messageState.id
-                )
-              }
-            );
-            messages = await response.json();
-            console.log("message readed");
-            console.log("the message:", messages);
-            setUpdate(update? false: true);
-          };
-          get();
-        }, []);
 
-        const RecievedMessage = () => {
-            if (messages === undefined) {
-                return (
-                    <div>
-                        <h1>メッセージはありません</h1>
-                    </div>
-                );
-            }
-            return (
-                <div>
-                    {messages.map((message: message) => {
-                        const from_user = props.users.find((user) => user.id == message.from_id);
-                        console.log("from_user", from_user);
-                        const from = () => {
-                            if (from_user === undefined) {
-                                return "loading"
-                            }
-                            else {
-                                return from_user.name
-                            }
-                        }
-                    return (
-                        <Accordion  key={message.id} expanded={expanded === 'panel1'} onChange={handleAcChange('panel1')}>
-                    <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1bh-content"
-                    id="panel1bh-header"
-                    >
-                    <Typography sx={{ width: '33%', flexShrink: 0 }}>
-                        贈り主: {from()
-                    }さんから
-                    </Typography>
-                    <Typography sx={{ color: 'text.secondary' }}>{message.point}ポイントが贈られました！</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                    <Typography>
-                        メッセージ: {message.message}
-                    </Typography>
-                    </AccordionDetails>
-                </Accordion>)
-                    })}
-                </div>)
-        }; 
+        
     return (
         <Box sx={{  width: "100%" }}>
+            <Container  sx={{ bgcolor: '#cfe8fc'}}  className="User_Header">
+                こんにちは，<b>{messageState.name}</b>さん
+            </Container>
       <AppBar position="static">
         <Tabs
           value={value}
@@ -169,15 +102,10 @@ const UserProfile = (props: Props) => {
 
 
         <TabPanel value={value} index={0} dir={theme.direction}>
-          <div>
-            <h1>ユーザー情報</h1>
-            <p>ユーザーID: {messageState.id}</p>
-            <p>ユーザー名: {messageState.name}</p>
-            <RecievedMessage />
-          </div>
+            <RecievedMessage users={props.users}/>
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-          Item Two
+            <SubmitMessage users={props.users}/>
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
             <SubmitForm users={props.users}/>

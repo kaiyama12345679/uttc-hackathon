@@ -18,7 +18,7 @@ let cnt = 0;
 export type userInfo = {
   id: string,
   name: string,
-  age: number,
+  points: number,
 }
 let Info: userInfo[];
 function App() {

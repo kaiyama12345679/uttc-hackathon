@@ -42,7 +42,6 @@ const TopPage = (props: Props) => {
          >
           <span key={user.id}>
             <h2>名前:{user.name}</h2>
-            <h2>年齢:{user.age}</h2>
             <Button   color="secondary" variant="contained" onClick={() => onSubmit(user.id, user.name)}>ユーザー選択</Button>
           </span>
         </ Box>  

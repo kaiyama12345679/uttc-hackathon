@@ -3,7 +3,7 @@
 }
 
 html {
-  background-color: darkgrey;
+  background-color: powderblue;  
 }
 
 .App-logo {
@@ -39,4 +39,9 @@ html {
   to {
     transform: rotate(360deg);
   }
+}
+
+
+.User_Header {
+  font-size: 20px;
 }
