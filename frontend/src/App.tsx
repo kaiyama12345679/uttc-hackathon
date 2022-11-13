@@ -9,7 +9,7 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { BrowserRouter , Routes, Route} from 'react-router-dom';
-import Login from "./Login";
+import SignUpForm from "./SignupForm";
 import TopPage from "./TopPage";
 import UserProfile from "./User";
 const URL = "http://localhost:8000/api";
@@ -70,7 +70,7 @@ function App() {
       <BrowserRouter>
       <Routes >
         <Route path = "/" element = {<TopPage  Info={Info}   />} />
-        <Route path = "/tameshi" element = {<Login />}/>
+        <Route path = "/signup" element = {<SignUpForm />}/>
         <Route path = "/user" element = {<UserProfile  users = {users}/>}/>
       </Routes>
     </BrowserRouter>

@@ -54,8 +54,8 @@ const TopPage = (props: Props) => {
           <UserList/>
         </div>
         
-        <Button  component={Link} to="/tameshi" variant="contained">
-            Link
+        <Button size="large"  component={Link} to="/signup" variant="contained">
+            サインアップ
         </Button>
       </div>
     )
