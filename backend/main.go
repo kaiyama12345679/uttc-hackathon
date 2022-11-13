@@ -6,11 +6,14 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
+	"github.com/oklog/ulid"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 var db *sql.DB
@@ -175,6 +178,71 @@ func userHandler(w http.ResponseWriter, r *http.Request) {
 
 	default:
 		return
+	}
+}
+func postHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
+	//必要なメソッドを許可する
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+
+	switch r.Method {
+	case http.MethodOptions:
+		return
+	case http.MethodPost:
+		var message UserMessage
+		if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		tx, err := db.Begin()
+		if err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		ins, err := tx.Prepare("INSERT INTO (id, front_id, to_id, point, message) VALUES(?, ?, ?, ?, ?)")
+		if err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		t := time.Now()
+		entropy := ulid.Monotonic(rand.New(rand.NewSource(t.UnixNano())), 0)
+		id := ulid.MustNew(ulid.Timestamp(t), entropy).String()
+		res, err := ins.Exec(id, message.FId, message.TId, message.Point, message.Message)
+		if err != nil {
+			tx.Rollback()
+			fmt.Print(err)
+			fmt.Println(res.LastInsertId())
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		bytes, err := json.Marshal("Success")
+		if err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			return
+		}
+		if _, err := w.Write(bytes); err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			return
+		}
+		if err := tx.Commit(); err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+
 	}
 }
 

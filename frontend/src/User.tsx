@@ -14,7 +14,8 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { userInfo } from "./App";
-type message = {
+import SubmitForm from "./post/MessagePost";
+export type message = {
     id: string,
     from_id: string,
     to_id: string,
@@ -31,7 +32,8 @@ var messages : message[];
 const URL = "http://localhost:8000/user";
 import {useLocation} from "react-router-dom";
 import { UserId } from "./TopPage";
-type state = {
+
+export type state = {
     id: string
     name: string
 }
@@ -108,7 +110,7 @@ const UserProfile = (props: Props) => {
             if (messages === undefined) {
                 return (
                     <div>
-                        <p>メッセージはありません</p>
+                        <h1>メッセージはありません</h1>
                     </div>
                 );
             }
@@ -119,14 +121,14 @@ const UserProfile = (props: Props) => {
                         console.log("from_user", from_user);
                         const from = () => {
                             if (from_user === undefined) {
-                                return "hoge"
+                                return "loading"
                             }
                             else {
                                 return from_user.name
                             }
                         }
                     return (
-                        <Accordion expanded={expanded === 'panel1'} onChange={handleAcChange('panel1')}>
+                        <Accordion  key={message.id} expanded={expanded === 'panel1'} onChange={handleAcChange('panel1')}>
                     <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1bh-content"
@@ -148,7 +150,7 @@ const UserProfile = (props: Props) => {
                 </div>)
         }; 
     return (
-        <Box sx={{ bgcolor: 'background.paper', width: "100%" }}>
+        <Box sx={{  width: "100%" }}>
       <AppBar position="static">
         <Tabs
           value={value}
@@ -178,7 +180,7 @@ const UserProfile = (props: Props) => {
           Item Two
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          Item Three
+            <SubmitForm users={props.users}/>
         </TabPanel>
         <Button component={Link} to="/" variant="contained">
             最初のページに戻る

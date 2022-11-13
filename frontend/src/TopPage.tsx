@@ -24,12 +24,14 @@ const TopPage = (props: Props) => {
       console.log("cnt: " + cnt);
     };
     
-    const userList = props.Info.map((user) => {
+    const UserList = () => {
+      return (
+        <div className="userList">
+      {props.Info.map((user) => {
         return (
           <Box className="user" key={user.id}
           sx={{
             width: "100%",
-            height: "20%",
             backgroundColor: 'primary.dark',
             textAlign: 'center',
             '&:hover': {
@@ -38,21 +40,21 @@ const TopPage = (props: Props) => {
             },
           }}
          >
-          <div key={user.id}>
-            <p>名前:{user.name}</p>
-            <p>年齢:{user.age}</p>
-            <Button type="submit" color="success"  variant="contained" onClick={() => onSubmit(user.id, user.name)}>ユーザー選択</Button>
-          </div>
+          <span key={user.id}>
+            <h2>名前:{user.name}</h2>
+            <h2>年齢:{user.age}</h2>
+            <Button   color="secondary" variant="contained" onClick={() => onSubmit(user.id, user.name)}>ユーザー選択</Button>
+          </span>
         </ Box>  
-      )});
+      )})}
+      </div>)};
     return (
       <div >
         <h1>トップページ</h1>
-        <ul>
         <div className='userList'>
-          {userList}
+          <UserList/>
         </div>
-        </ul>
+        
         <Button  component={Link} to="/tameshi" variant="contained">
             Link
         </Button>
