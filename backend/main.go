@@ -21,6 +21,14 @@ type UserResForHTTPGet struct {
 	Age  int    `json:"age"`
 }
 
+type UserMessage struct {
+	Id      string `json:"id"`
+	FId     string `json:"from_id"`
+	TId     string `json:"to_id"`
+	Point   int    `json:"point"`
+	Message string `json:"message"`
+}
+
 func init() {
 
 	godotenv.Load(".env")
@@ -51,12 +59,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
 	//必要なメソッドを許可する
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-
+	fmt.Println("default init")
 	switch r.Method {
 	case http.MethodOptions:
 		return
 	case http.MethodGet:
-
 		rows, err := db.Query("SELECT * FROM user")
 		if err != nil {
 			log.Fatal(err)
@@ -113,10 +120,68 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+func userHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
+	//必要なメソッドを許可する
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	fmt.Println("init")
+	switch r.Method {
+	case http.MethodOptions:
+		return
+	case http.MethodPost:
+		fmt.Println("start")
+
+		var userId string
+		if err := json.NewDecoder(r.Body).Decode(&userId); err != nil {
+			fmt.Println(err)
+			fmt.Println("Here?")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if userId == "" {
+			fmt.Println("empty id")
+		}
+		fmt.Printf("userid is %v\n", userId)
+		queString := fmt.Sprintf("SELECT * FROM messages WHERE to_id = %v", userId)
+		rows, err := db.Query(queString)
+		if err != nil {
+			fmt.Println("point2", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		messages := make([]UserMessage, 0)
+		for rows.Next() {
+			var m UserMessage
+			if err := rows.Scan(&m.Id, &m.FId, &m.TId, &m.Point, &m.Message); err != nil {
+				fmt.Println("point5", err)
+				if err := rows.Close(); err != nil {
+					fmt.Println("point3", err)
+				}
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			messages = append(messages, m)
+		}
+		bytes, err := json.Marshal(messages)
+		if err != nil {
+			fmt.Println("point4", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(bytes)
+
+	default:
+		return
+	}
+}
 
 func main() {
 	fmt.Println("Hello, World!")
 	http.HandleFunc("/api", handler)
+	http.HandleFunc("/user", userHandler)
 
 	closeDBWithSyscall()
 

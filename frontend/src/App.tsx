@@ -23,7 +23,7 @@ export type userInfo = {
 let Info: userInfo[];
 function App() {
   const [update, setUpdate] = useState<boolean>(false);
-  const [luid, setLuid] = useState<string>("");
+  const [users, setUser] = useState<userInfo[]>([]);
   useEffect(
     () => {
       const get = async () => {
@@ -40,6 +40,7 @@ function App() {
         const info: userInfo[] = await response.json();
         console.log("readed");
         Info = info;
+        setUser(info);
         console.table(Info);
         setUpdate(update? false: true);
       }
@@ -50,7 +51,7 @@ function App() {
     
     const Header = () => {
       return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ width: "100%"}} >
           <AppBar position="static">
             <Toolbar>
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -64,17 +65,16 @@ function App() {
     
   
   return (
-    <div>
-      <Header />
+    <div className='App'>
+      <Header  />
       <BrowserRouter>
-      <Routes>
+      <Routes >
         <Route path = "/" element = {<TopPage  Info={Info}   />} />
         <Route path = "/tameshi" element = {<Login />}/>
-        <Route path = "/user" element = {<UserProfile  />}/>
+        <Route path = "/user" element = {<UserProfile  users = {users}/>}/>
       </Routes>
     </BrowserRouter>
     </div>
   );
 }
-
 export default App;
