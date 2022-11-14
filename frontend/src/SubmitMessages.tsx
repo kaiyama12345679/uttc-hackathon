@@ -40,6 +40,7 @@ const SubmitMessage = (props: Props) => {
 
     useEffect(
         () => {
+            messages = [];
             resStatus = 0;
           const get = async () => {
             const response = await fetch(
