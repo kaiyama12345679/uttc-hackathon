@@ -83,7 +83,7 @@ const RecievedMessage = (props: Props) => {
                     }
                 }
             return (
-                <Accordion  key={message.id} expanded={expanded === 'panel1'} onChange={handleAcChange('panel1')}>
+                <Accordion  key={message.id} expanded={expanded === message.id} onChange={handleAcChange(message.id)}>
             <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1bh-content"

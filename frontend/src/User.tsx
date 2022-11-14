@@ -29,6 +29,7 @@ export type message = {
 
 type Props = {
     users: userInfo[],
+
 }
 
 var messages : message[];
@@ -81,7 +82,7 @@ const UserProfile = (props: Props) => {
         
     return (
         <Box sx={{  width: "100%" }}>
-            <Container  sx={{ bgcolor: '#cfe8fc'}}  className="User_Header">
+            <Container  sx={{ bgcolor: '#cfe8fc'}} className="User_Header">
                 こんにちは，<b>{messageState.name}</b>さん
             </Container>
       <AppBar position="static">
@@ -105,7 +106,7 @@ const UserProfile = (props: Props) => {
             <RecievedMessage users={props.users}/>
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-            <SubmitMessage users={props.users}/>
+            <SubmitMessage users={props.users} />
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
             <SubmitForm users={props.users}/>

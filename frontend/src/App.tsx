@@ -71,7 +71,7 @@ function App() {
       <Routes >
         <Route path = "/" element = {<TopPage  Info={Info}   />} />
         <Route path = "/signup" element = {<SignUpForm />}/>
-        <Route path = "/user" element = {<UserProfile  users = {users}/>}/>
+        <Route path = "/user" element = {<UserProfile  users = {users} />}/>
       </Routes>
     </BrowserRouter>
     </div>

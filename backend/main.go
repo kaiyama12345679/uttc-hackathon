@@ -242,6 +242,45 @@ func userToHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write(bytes)
+	case http.MethodDelete:
+		var messageId string
+
+		if err := json.NewDecoder(r.Body).Decode(&messageId); err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		tx, err := db.Begin()
+		if err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		queStr := fmt.Sprintf("DELETE FROM messages WHERE id = '%v'", messageId)
+		stmt, err := tx.Prepare(queStr)
+		if err != nil {
+			stmt.Close()
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if res, err := stmt.Exec(); err != nil {
+			tx.Rollback()
+			fmt.Println(res.RowsAffected())
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if err := tx.Commit(); err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
 
 	default:
 		return
