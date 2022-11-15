@@ -46,6 +46,7 @@ type EditMessage struct {
 
 func init() {
 
+	
 	mysqlUser := os.Getenv("MYSQL_USER")
 	mysqlPwd := os.Getenv("MYSQL_PWD")
 	mysqlHost := os.Getenv("MYSQL_HOST")
