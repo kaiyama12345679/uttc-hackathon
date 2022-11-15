@@ -32,7 +32,7 @@ const AccountEdit = () => {
                 },
                 body: JSON.stringify({
                     id: messageState.id,
-                    name: new_name,
+                    new_name: new_name,
                 }),
             }
         );
