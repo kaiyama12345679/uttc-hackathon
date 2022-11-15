@@ -25,15 +25,22 @@ type UserResForHTTPGet struct {
 }
 
 type UserMessage struct {
-	Id      string `json:"id"`
+	Id         string `json:"id"`
+	FId        string `json:"from_id"`
+	TId        string `json:"to_id"`
+	Point      int    `json:"point"`
+	Message    string `json:"message"`
+	PostedTime string `json:"posted_time"`
+}
+type SubmitMessage struct {
 	FId     string `json:"from_id"`
 	TId     string `json:"to_id"`
 	Point   int    `json:"point"`
 	Message string `json:"message"`
 }
-type SubmitMessage struct {
-	FId     string `json:"from_id"`
-	TId     string `json:"to_id"`
+
+type EditMessage struct {
+	Id      string `json:"id"`
 	Point   int    `json:"point"`
 	Message string `json:"message"`
 }
@@ -72,12 +79,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodOptions:
 		return
 	case http.MethodGet:
-		rows, err := db.Query("SELECT * FROM users")
+		rows, err := db.Query("SELECT users.id, users.name, IFNULL(SUM(messages.point), 0) FROM users LEFT JOIN messages ON users.id = messages.to_id GROUP BY users.id")
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 		defer rows.Close()
 		users := make([]UserResForHTTPGet, 0)
+
 		for rows.Next() {
 			var u UserResForHTTPGet
 			if err := rows.Scan(&u.Id, &u.Name, &u.Points); err != nil {
@@ -140,23 +150,17 @@ func userHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodOptions:
 		return
 	case http.MethodPost:
-		fmt.Println("start")
 
 		var userId string
 		if err := json.NewDecoder(r.Body).Decode(&userId); err != nil {
 			fmt.Println(err)
-			fmt.Println("Here?")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		if userId == "" {
-			fmt.Println("empty id")
-		}
-		fmt.Printf("userid is %v\n", userId)
 		queString := fmt.Sprintf("SELECT * FROM messages WHERE to_id = '%v'", userId)
 		rows, err := db.Query(queString)
 		if err != nil {
-			fmt.Println("point2", err)
+			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -164,10 +168,10 @@ func userHandler(w http.ResponseWriter, r *http.Request) {
 		messages := make([]UserMessage, 0)
 		for rows.Next() {
 			var m UserMessage
-			if err := rows.Scan(&m.Id, &m.FId, &m.TId, &m.Point, &m.Message); err != nil {
-				fmt.Println("point5", err)
+			if err := rows.Scan(&m.Id, &m.FId, &m.TId, &m.Point, &m.Message, &m.PostedTime); err != nil {
+				fmt.Println(err)
 				if err := rows.Close(); err != nil {
-					fmt.Println("point3", err)
+					fmt.Println(err)
 				}
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -176,7 +180,7 @@ func userHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		bytes, err := json.Marshal(messages)
 		if err != nil {
-			fmt.Println("point4", err)
+			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -199,23 +203,17 @@ func userToHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodOptions:
 		return
 	case http.MethodPost:
-		fmt.Println("start")
 
 		var userId string
 		if err := json.NewDecoder(r.Body).Decode(&userId); err != nil {
 			fmt.Println(err)
-			fmt.Println("Here?")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		if userId == "" {
-			fmt.Println("empty id")
-		}
-		fmt.Printf("userid is %v\n", userId)
 		queString := fmt.Sprintf("SELECT * FROM messages WHERE from_id = '%v'", userId)
 		rows, err := db.Query(queString)
 		if err != nil {
-			fmt.Println("point2", err)
+			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -223,7 +221,7 @@ func userToHandler(w http.ResponseWriter, r *http.Request) {
 		messages := make([]UserMessage, 0)
 		for rows.Next() {
 			var m UserMessage
-			if err := rows.Scan(&m.Id, &m.FId, &m.TId, &m.Point, &m.Message); err != nil {
+			if err := rows.Scan(&m.Id, &m.FId, &m.TId, &m.Point, &m.Message, &m.PostedTime); err != nil {
 				fmt.Println("point5", err)
 				if err := rows.Close(); err != nil {
 					fmt.Println("point3", err)
@@ -282,7 +280,49 @@ func userToHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusOK)
 
+	case http.MethodPut:
+		var editMessage EditMessage
+
+		if err := json.NewDecoder(r.Body).Decode(&editMessage); err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		tx, err := db.Begin()
+		if err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		queStr := fmt.Sprintf("UPDATE messages SET point = '%v', message = '%v' WHERE id = '%v'",
+			editMessage.Point, editMessage.Message, editMessage.Id)
+		stmt, err := tx.Prepare(queStr)
+		if err != nil {
+			stmt.Close()
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if res, err := stmt.Exec(); err != nil {
+			tx.Rollback()
+			fmt.Println(res.RowsAffected())
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if err := tx.Commit(); err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+
 	default:
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 }
@@ -297,7 +337,6 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodOptions:
 		return
 	case http.MethodPost:
-		fmt.Println("Post Start")
 		var message SubmitMessage
 		if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
 			fmt.Println(err)
@@ -311,7 +350,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		ins, err := tx.Prepare("INSERT INTO messages (id, from_id, to_id, point, message) VALUES(?, ?, ?, ?, ?)")
+		ins, err := tx.Prepare("INSERT INTO messages (id, from_id, to_id, point, message, posted_time) VALUES(?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			tx.Rollback()
 			fmt.Println(err)
@@ -321,7 +360,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		t := time.Now()
 		entropy := ulid.Monotonic(rand.New(rand.NewSource(t.UnixNano())), 0)
 		id := ulid.MustNew(ulid.Timestamp(t), entropy).String()
-		res, err := ins.Exec(id, message.FId, message.TId, message.Point, message.Message)
+		res, err := ins.Exec(id, message.FId, message.TId, message.Point, message.Message, t.String())
 		if err != nil {
 			tx.Rollback()
 			fmt.Print(err)
@@ -391,7 +430,7 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		ins, err := tx.Prepare("INSERT INTO users (id, name, points) VALUES (?, ?, ?)")
+		ins, err := tx.Prepare("INSERT INTO users (id, name) VALUES (?, ?)")
 
 		if err != nil {
 			tx.Rollback()
@@ -402,7 +441,7 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 		t := time.Now()
 		entropy := ulid.Monotonic(rand.New(rand.NewSource(t.UnixNano())), 0)
 		id := ulid.MustNew(ulid.Timestamp(t), entropy).String()
-		res, err := ins.Exec(id, user, 0)
+		res, err := ins.Exec(id, user)
 
 		if err != nil {
 			tx.Rollback()

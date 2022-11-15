@@ -14,7 +14,6 @@ import TopPage from "./TopPage";
 import UserProfile from "./User";
 const URL = "http://localhost:8000/api";
 
-let cnt = 0;
 export type userInfo = {
   id: string,
   name: string,

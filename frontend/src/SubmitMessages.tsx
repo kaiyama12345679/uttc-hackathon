@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import { Typography } from "@mui/material";
+import { dividerClasses, TextField, Typography } from "@mui/material";
 import { AppBar } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import Accordion from '@mui/material/Accordion';
@@ -19,14 +19,19 @@ import Container from '@mui/material/Container';
 import "./App.css";
 import { useLocation } from "react-router-dom";
 import { message, state } from "./User";
+import Slider from "@mui/material/Slider";
+import SendIcon from '@mui/icons-material/Send';
+import OnEditChange from "./EditChange";
+import DeleteIcon from '@mui/icons-material/Delete';
 const URL = "http://localhost:8000/user/to";
-var messages: message[];
 
 type Props = {
     users: userInfo[],
 }
 
+
 const SubmitMessage = (props: Props) => {
+    const [SubmitMessages, setSubmitMessages] = useState<message[]>([]);
     const get = async () => {
         const response = await fetch(
           URL,
@@ -40,7 +45,7 @@ const SubmitMessage = (props: Props) => {
             )
           }
         );
-        messages = await response.json();
+        setSubmitMessages(await response.json());
         resStatus = response.status;
         console.log("submitresStatus: " + resStatus);
         setUpdate(update?false:true);
@@ -50,17 +55,23 @@ const SubmitMessage = (props: Props) => {
     const messageState = location.state as state;
     const [update, setUpdate] = useState<boolean>(false);
     const [expanded, setExpanded] = React.useState<string | false>(false);
-    const [isClicked, setIsClicked] = React.useState<string | false>(false);
-    const [tmp, setTmp] = useState<JSX.Element>()
+    const [isClicked, setIsClicked] = React.useState<boolean | string>(false);
+    const [isedit, setIsedit] = React.useState<string>("編集");
     let resStatus: number;
     const handleAcChange =
         (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
         setExpanded(isExpanded ? panel : false);
+        setIsClicked(false);
+        setIsedit("投稿の編集");
         };
 
 
     const onDelete = async (e:React.MouseEvent<HTMLButtonElement, MouseEvent>, mid: string) => {
         console.log("delete start");
+        const ans = window.confirm("本当に削除しますか？");
+        if(!ans){
+            return;
+        }
         const response = await fetch(
             URL, 
             {
@@ -79,28 +90,23 @@ const SubmitMessage = (props: Props) => {
             alert("削除に失敗しました　もう一度やり直して下さい")
         }
     }
-    const onEditChange = (panel: string) => (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        console.log("Mid is", panel)
-        setIsClicked(isClicked? panel:false);
-        setUpdate(update?false:true);
-        if (update) {
-            setTmp(<h1>hogehoge</h1>);
+    
+
+    const onChange = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setIsClicked(!isClicked);
+        if (!isClicked) {
+            setIsedit("編集をキャンセル");
         } else {
-            setTmp(<h1>foofoo</h1>);
+            setIsedit("投稿の編集");
         }
     }
 
     useEffect(
         () => {
           get();
+          setIsClicked(false);
         }, []);
-
-    useEffect(
-        () => {
-            console.log("fmt");
-        }
-    , [isClicked]);
-    if (messages === undefined) {
+    if (SubmitMessages === undefined) {
         return (
             <div>
                 <h1>メッセージはありません</h1>
@@ -109,7 +115,7 @@ const SubmitMessage = (props: Props) => {
     }
     return (
         <div>
-            {messages.map((message: message) => {
+            {SubmitMessages.map((message: message) => {
                 const to_user = props.users.find((user) => user.id == message.to_id);
                 const To = () => {
                     if (to_user === undefined) {
@@ -119,18 +125,7 @@ const SubmitMessage = (props: Props) => {
                         return to_user.name
                     }
                 };
-                const EditConsole = () => {
-                    if (isClicked == message.id) {
-                        console.log("open id is", message.id);
-                        return (
-                            <div>hogehoge</div>
-                        )
-                    } else {
-                        return (
-                            <div>foofoo</div>
-                        )
-                    }
-                }
+                
             return (
                 <Accordion  key={message.id} expanded={expanded === message.id} onChange={handleAcChange(message.id)}>
             <AccordionSummary
@@ -142,15 +137,16 @@ const SubmitMessage = (props: Props) => {
                 送信先: <b>{To()}</b>さんに
             </Typography>
             <Typography sx={{ color: 'text.secondary' }}><b>{message.point}</b> ポイントを贈りました！</Typography>
+            <Typography sx={{ color: 'text.secondary' }}>時刻:<b>{message.posted_time}</b></Typography>
             </AccordionSummary>
             <AccordionDetails>
             <Typography>
-                メッセージ: {message.message}
+                <h3>{message.message}</h3>
             </Typography>
-            <Button variant="outlined" color="success" onClick={onEditChange(message.id)}>編集</Button>
-            <Button variant="outlined" color="error" onClick={(e) => onDelete(e, message.id)}>削除</Button>
+            <Button variant="outlined" color="success" onClick={onChange}>{isedit}</Button>
+            <Button variant="contained" color="error" startIcon={<DeleteIcon />} onClick={(e) => onDelete(e, message.id)}>投稿を削除</Button>
             </AccordionDetails>
-            {tmp}
+            <OnEditChange isClicked={isClicked} message={message} setSubmitMessages={setSubmitMessages} setIsClicked={setIsClicked} setIsedit={setIsedit}/>
         </Accordion>)
             })}
         </div>)

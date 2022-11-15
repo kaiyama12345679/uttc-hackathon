@@ -35,7 +35,7 @@ const SignUpForm = () => {
             console.log(res_status);
             if (res_status == 200) {
                 alert("登録が完了しました");
-                navigate("/");
+                document.location.href = "/";
             } else if(res_status == 409) {
                 alert("そのユーザー名はすでに使われています");
                 setUser("");

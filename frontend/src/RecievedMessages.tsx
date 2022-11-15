@@ -93,10 +93,11 @@ const RecievedMessage = (props: Props) => {
                 贈り主: <b>{From()}</b>さんから
             </Typography>
             <Typography sx={{ color: 'text.secondary' }}><b>{message.point}</b>ポイントが贈られました！</Typography>
+            <Typography sx={{ color: 'text.secondary' }}>時刻:<b>{message.posted_time}</b></Typography>
             </AccordionSummary>
             <AccordionDetails>
             <Typography>
-                メッセージ: {message.message}
+                <h3>{message.message}</h3>
             </Typography>
             </AccordionDetails>
         </Accordion>)

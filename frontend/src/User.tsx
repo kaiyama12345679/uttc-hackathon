@@ -13,6 +13,8 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {useLocation} from "react-router-dom";
+import { UserId } from "./TopPage";
 import { userInfo } from "./App";
 import SubmitForm from "./post/MessagePost";
 import Container from '@mui/material/Container';
@@ -25,6 +27,7 @@ export type message = {
     to_id: string,
     point: number,
     message: string,
+    posted_time: string,
 };
 
 type Props = {
@@ -35,8 +38,6 @@ type Props = {
 var messages : message[];
 
 const URL = "http://localhost:8000/user";
-import {useLocation} from "react-router-dom";
-import { UserId } from "./TopPage";
 
 export type state = {
     id: string
@@ -111,7 +112,7 @@ const UserProfile = (props: Props) => {
         <TabPanel value={value} index={2} dir={theme.direction}>
             <SubmitForm users={props.users}/>
         </TabPanel>
-        <Button component={Link} to="/" variant="contained">
+        <Button  href="/" variant="contained">
             最初のページに戻る
           </Button>
     </Box>

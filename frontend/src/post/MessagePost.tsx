@@ -75,31 +75,6 @@ const SubmitForm = (props: Props) => {
             console.log("post end");   
 }
 
-    const UserList = () => {
-        if (props.users.length === 0) {
-            return (<div>ユーザーがいません</div>);
-        }
-        {
-           return (<Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth>
-            <InputLabel  id="demo-simple-select-label">送信先の選択</InputLabel>
-            </FormControl>
-           <Select
-           fullWidth
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={toid}
-            label="送信先"
-            onChange={handleNameChange}
-          >
-            {props.users.map((user) => {
-        if (user.id != nowuser.id) {
-            return (<MenuItem key={user.id} value={user.id}>{user.name}</MenuItem>)
-        }})}
-          </Select>
-          </Box>
-            
-    )}}; 
     const pointMark = [
         {value: 1, label: 'Min'},
         {value: 500, label: 'Max'},
@@ -111,7 +86,21 @@ const SubmitForm = (props: Props) => {
         <div>
             <Box>
             <h2>感謝したい相手は誰ですか？</h2>
-            <UserList />
+            <FormControl fullWidth>
+  <InputLabel id="demo-simple-select-label">送信先の選択</InputLabel>
+  <Select
+    labelId="demo-simple-select-label"
+    id="demo-simple-select"
+    value={toid}
+    label="ToId"
+    onChange={handleNameChange}
+  >
+    {props.users.map((user) => {
+        if (user.id != nowuser.id) {
+            return <MenuItem key={user.id} value={user.id}>{user.name}</MenuItem>
+        }})}
+  </Select>
+</FormControl>
             <h3>どれだけ感謝したいですか？</h3>
             <Slider min={1} max={500} marks={pointMark} value={point} aria-label="Default" valueLabelDisplay="auto"  onChange={myPointChange}/>
             <h4>{point}ポイント？</h4>
