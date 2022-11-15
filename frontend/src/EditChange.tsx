@@ -78,7 +78,7 @@ const pointMark = [
             return;
         }
         const response = await fetch(
-          URL,
+          URL + "/user/to",
           {
             method: "PUT",
             headers: {
