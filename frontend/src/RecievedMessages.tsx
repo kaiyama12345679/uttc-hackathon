@@ -13,6 +13,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import MDSpinner from "react-md-spinner";
 import { userInfo } from "./App";
 import SubmitForm from "./post/MessagePost";
 import Container from '@mui/material/Container';
@@ -65,9 +66,7 @@ const RecievedMessage = (props: Props) => {
             }, []);
     if (messages === undefined) {
         return (
-            <div>
-                <h1>メッセージはありません</h1>
-            </div>
+            <MDSpinner size={100}/>
         );
     }
     return (

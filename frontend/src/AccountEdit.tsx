@@ -14,6 +14,7 @@ const AccountEdit = () => {
     const messageState = location.state as state;
     const [new_name, setNew_name] = React.useState<string>("");
     const [loading, setLoading] = React.useState(false);
+    const [loading2, setLoading2] = React.useState(false);
     const myInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNew_name(e.target.value as string);
     };
@@ -26,6 +27,7 @@ const AccountEdit = () => {
             alert("名前を入力してください");
             return;
         }
+        setLoading2(true);
         const response = await fetch(
             URL + "/user/account-edit",
             {
@@ -39,6 +41,7 @@ const AccountEdit = () => {
                 }),
             }
         );
+        setLoading2(false);
         const resStatus = response.status;
         if (resStatus == 200) {
             messageState.name = new_name;
@@ -89,7 +92,7 @@ const AccountEdit = () => {
             <h3>現在のアカウント名: {messageState.name}</h3>
             <TextField fullWidth id="filled-basic" label="新しいアカウント名を入力" variant="filled" value={new_name} onChange={myInputChange} />
             <h2 style={{color: "blue"}}>新しいアカウント名: {new_name}</h2>
-            <Button onClick={onNameChange} variant="contained" color="success">アカウント名の変更</Button>
+            <LoadingButton onClick={onNameChange} variant="contained" color="success" loading={loading2}>アカウント名の変更</LoadingButton>
             <br />
         </Box>
         <Box>

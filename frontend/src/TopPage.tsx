@@ -10,6 +10,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import CommentIcon from '@mui/icons-material/Comment';
 import IconButton from '@mui/material/IconButton';
+import MDSpinner from "react-md-spinner";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -52,7 +53,7 @@ const TopPage = (props: Props) => {
     const navigate = useNavigate();
     if (props.Info == null ) {
         return (
-            <div>not readed</div>
+            <MDSpinner size={100}/>
         )
     }
     const onSubmit = async (id: string, name: string) => {

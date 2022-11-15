@@ -7,15 +7,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import { dividerClasses, TextField, Typography } from "@mui/material";
-import { AppBar } from "@mui/material";
-import { useTheme } from '@mui/material/styles';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { userInfo } from "./App";
-import SubmitForm from "./post/MessagePost";
-import Container from '@mui/material/Container';
+import LoadingButton from '@mui/lab/LoadingButton';
 import "./App.css";
 import { useLocation } from "react-router-dom";
 import { message, state } from "./User";
@@ -34,6 +26,7 @@ const OnEditChange = (props: Props) => {
 
     const location = useLocation();
     const messageState = location.state as state;
+    const [loading, setLoading] = React.useState(false);
 
     const get = async () => {
         const response = await fetch(
@@ -72,11 +65,7 @@ const pointMark = [
 ];
 
     const onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-
-        const ans = window.confirm("この内容で更新しますか？");
-        if (!ans) {
-            return;
-        }
+        setLoading(true);
         const response = await fetch(
           URL + "/user/to",
           {
@@ -93,6 +82,7 @@ const pointMark = [
             )
           }
         );
+        setLoading(false);
         const resStatus = response.status;
         if (resStatus === 200) {
             alert("更新しました");
@@ -114,9 +104,9 @@ const pointMark = [
                 <TextField fullWidth id="filled-basic" label="メッセージを入力" variant="filled" value={message} onChange={myInputChange} />
                 </Box>
                 <Box>
-                <Button variant="contained" color="warning" size="medium" endIcon={<SendIcon/>} onClick={onSubmit} >
+                <LoadingButton variant="contained" color="warning" size="medium" endIcon={<SendIcon/>} onClick={onSubmit} loading={loading} >
                     修正の完了
-                    </Button>
+                    </LoadingButton>
                 </Box>
             </div>  
         )
