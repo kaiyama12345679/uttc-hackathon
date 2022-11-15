@@ -21,7 +21,7 @@ import { useLocation } from "react-router-dom";
 import { message, state } from "./User";
 import Slider from "@mui/material/Slider";
 import SendIcon from '@mui/icons-material/Send';
-const URL = "http://localhost:8000/user/to";
+import {URL} from "./App"
 type Props = {
     isClicked: boolean | string,
     message: message,
@@ -37,7 +37,7 @@ const OnEditChange = (props: Props) => {
 
     const get = async () => {
         const response = await fetch(
-          URL,
+          URL + "/user/to",
           {
             method: "POST",
             headers: {

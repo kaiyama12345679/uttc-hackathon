@@ -4,7 +4,7 @@ import {Link, useNavigate} from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import SendIcon from '@mui/icons-material/Send';
-const URL = "http://localhost:8000/signup";
+import {URL} from "./App";
 
 const SignUpForm = () => {
     const [user, setUser] = useState("");
@@ -22,7 +22,7 @@ const SignUpForm = () => {
             }
             
             const response = await fetch(
-                URL,
+                URL + "/signup",
                 {
                     method: "POST",
                     headers: {

@@ -23,7 +23,7 @@ import Slider from "@mui/material/Slider";
 import SendIcon from '@mui/icons-material/Send';
 import OnEditChange from "./EditChange";
 import DeleteIcon from '@mui/icons-material/Delete';
-const URL = "http://localhost:8000/user/to";
+import {URL} from "./App";
 
 type Props = {
     users: userInfo[],
@@ -34,7 +34,7 @@ const SubmitMessage = (props: Props) => {
     const [SubmitMessages, setSubmitMessages] = useState<message[]>([]);
     const get = async () => {
         const response = await fetch(
-          URL,
+          URL + "/user/to",
           {
             method: "POST",
             headers: {
@@ -73,7 +73,7 @@ const SubmitMessage = (props: Props) => {
             return;
         }
         const response = await fetch(
-            URL, 
+            URL + "/user/to", 
             {
             method: "DELETE",
             headers: {

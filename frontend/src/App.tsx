@@ -12,7 +12,7 @@ import { BrowserRouter , Routes, Route} from 'react-router-dom';
 import SignUpForm from "./SignupForm";
 import TopPage from "./TopPage";
 import UserProfile from "./User";
-const URL = "http://localhost:8000/api";
+export const URL = "https://uttc-hackathon-v3glk6ae6a-uc.a.run.app/";
 
 export type userInfo = {
   id: string,
@@ -28,7 +28,7 @@ function App() {
       const get = async () => {
         console.log("init");
         const response = await fetch(
-          URL,
+          URL + "/api",
           {
             method: "GET",
             headers: {

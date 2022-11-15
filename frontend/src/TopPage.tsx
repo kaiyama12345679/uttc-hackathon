@@ -44,7 +44,6 @@ export const options = {
   },
 };
 
-const URL = "http://localhost:8000/api";
 type Props = {
     Info: userInfo[]
 }

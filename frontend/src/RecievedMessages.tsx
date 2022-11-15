@@ -19,13 +19,13 @@ import Container from '@mui/material/Container';
 import "./App.css";
 import { message, state } from "./User";
 import { useLocation } from "react-router-dom";
-
+import {URL} from "./App";
 var messages: message[];
 type Props = {
     users: userInfo[],
 }
 
-const URL = "http://localhost:8000/user";
+
 
 const RecievedMessage = (props: Props) => {
 
@@ -45,7 +45,7 @@ const RecievedMessage = (props: Props) => {
                 resStatus = 0;
               const get = async () => {
                 const response = await fetch(
-                  URL,
+                  URL + "/user",
                   {
                     method: "POST",
                     headers: {

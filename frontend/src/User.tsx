@@ -37,8 +37,6 @@ type Props = {
 
 var messages : message[];
 
-const URL = "http://localhost:8000/user";
-
 export type state = {
     id: string
     name: string

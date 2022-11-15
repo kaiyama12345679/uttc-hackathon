@@ -13,6 +13,7 @@ import {useLocation} from "react-router-dom";
 import Slider from "@mui/material/Slider";
 import Button from "@mui/material/Button";
 import SendIcon from '@mui/icons-material/Send';
+import {URL} from "../App";
 type Props = {
     users: userInfo[],
 }
@@ -23,7 +24,6 @@ type submitMessage = {
     point: number,
     message: string,
 }
-const URL = "http://localhost:8000/user/message";
 const SubmitForm = (props: Props) => {
     const [toid, setToid] = useState<string>("");
     const [point, setPoint] = useState<number>(1);
@@ -53,7 +53,7 @@ const SubmitForm = (props: Props) => {
         
             console.log("post start");
             const response = await fetch(
-                URL,
+                URL + "/user/message",
                 {
                     method: "POST",
                     headers: {
