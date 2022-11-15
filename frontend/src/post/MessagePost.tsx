@@ -5,6 +5,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import LoadingButton from '@mui/lab/LoadingButton';
 import TextField from '@mui/material/TextField';
 import {message} from "../User";
 import { userInfo } from "../App";
@@ -28,6 +29,7 @@ const SubmitForm = (props: Props) => {
     const [toid, setToid] = useState<string>("");
     const [point, setPoint] = useState<number>(1);
     const [message, setMessage] = useState<string>("");
+    const [loading, setLoading] = useState(false);
     const handleNameChange = (event: SelectChangeEvent) => {
         setToid(event.target.value as string);
     };
@@ -48,6 +50,7 @@ const SubmitForm = (props: Props) => {
             alert("相手のユーザーを選択してください");
             return;
         }
+        setLoading(true);
         const theMessage: submitMessage = {from_id: nowuser.id, to_id: toid, point: point, message: message};
 
         
@@ -62,6 +65,7 @@ const SubmitForm = (props: Props) => {
                     body: JSON.stringify(theMessage),
                 }
             );
+            setLoading(false);
             const res_status: number =  response.status;
             console.log(res_status);
             if (res_status == 200) {
@@ -108,9 +112,9 @@ const SubmitForm = (props: Props) => {
             <TextField fullWidth id="filled-basic" label="メッセージを入力" variant="filled" value={message} onChange={myInputChange} />
             </Box>
             <Box>
-            <Button variant="contained" color="inherit" size="large" endIcon={<SendIcon/>} onClick={onSubmit}>
+            <LoadingButton variant="contained" color="inherit" size="large" endIcon={<SendIcon/>} onClick={onSubmit} loading={loading}>
                 メッセージを送る
-                </Button>
+                </LoadingButton>
             </Box>
         </div>   
     )

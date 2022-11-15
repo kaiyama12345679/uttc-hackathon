@@ -533,6 +533,50 @@ func accountEdit(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusOK)
 
+	case http.MethodDelete:
+		var userId string
+		if err := json.NewDecoder(r.Body).Decode(&userId); err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		tx1, err1 := db.Begin()
+		tx2, err2 := db.Begin()
+		if err1 != nil || err2 != nil {
+			tx1.Rollback()
+			tx2.Rollback()
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		dl1, err1 := tx1.Prepare("DELETE FROM users WHERE id = ?")
+		dl2, err2 := tx2.Prepare("DELETE FROM messages WHERE from_id = ? or to_id = ?")
+		if err1 != nil || err2 != nil {
+			tx1.Rollback()
+			tx2.Rollback()
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		res1, err1 := dl1.Exec(userId)
+		res2, err2 := dl2.Exec(userId, userId)
+		if err1 != nil || err2 != nil {
+			tx1.Rollback()
+			tx2.Rollback()
+			fmt.Println(res1.RowsAffected())
+			fmt.Println(res2.RowsAffected())
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		err1 = tx1.Commit()
+		err2 = tx2.Commit()
+		if err1 != nil || err2 != nil {
+			tx1.Rollback()
+			tx2.Rollback()
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+
 	default:
 		w.WriteHeader(http.StatusBadRequest)
 		return
