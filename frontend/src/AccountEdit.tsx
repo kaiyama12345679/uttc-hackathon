@@ -54,7 +54,8 @@ const AccountEdit = () => {
             <h3>現在のアカウント名: {messageState.name}</h3>
             <TextField fullWidth id="filled-basic" label="新しいアカウント名を入力" variant="filled" value={new_name} onChange={myInputChange} />
             <h2 style={{color: "blue"}}>新しいアカウント名: {new_name}</h2>
-            <Button onSubmit={onNameChange} variant="contained" color="success">アカウント名の変更</Button>
+            <Button onClick={onNameChange} variant="contained" color="success">アカウント名の変更</Button>
+            <br />
             <Button onClick={onBackChange}>ユーザ画面に戻る</Button>
         </Box>
         </div>

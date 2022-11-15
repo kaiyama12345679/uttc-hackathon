@@ -498,7 +498,7 @@ func accountEdit(w http.ResponseWriter, r *http.Request) {
 		for rows.Next() {
 			cnt += 1
 		}
-		if cnt > 1 {
+		if cnt >= 1 {
 			w.WriteHeader(http.StatusConflict)
 			return
 		}
