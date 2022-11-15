@@ -36,7 +36,9 @@ type Props = {
 const SubmitMessage = (props: Props) => {
     const [SubmitMessages, setSubmitMessages] = useState<message[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [changing, setChanging] = useState<boolean>(false);
     const get = async () => {
+        setChanging(true);
         const response = await fetch(
           URL + "/user/to",
           {
@@ -54,6 +56,7 @@ const SubmitMessage = (props: Props) => {
         resStatus = response.status;
         console.log("submitresStatus: " + resStatus);
         setUpdate(update?false:true);
+        setChanging(false);
       };
 
     const location = useLocation();
@@ -61,7 +64,7 @@ const SubmitMessage = (props: Props) => {
     const [update, setUpdate] = useState<boolean>(false);
     const [expanded, setExpanded] = React.useState<string | false>(false);
     const [isClicked, setIsClicked] = React.useState<boolean | string>(false);
-    const [isedit, setIsedit] = React.useState<string>("編集");
+    const [isedit, setIsedit] = React.useState<string>("投稿の編集");
     let resStatus: number;
     const handleAcChange =
         (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -112,14 +115,14 @@ const SubmitMessage = (props: Props) => {
         () => {
           get();
         }, []);
-    if (messages === undefined) {
+    if (changing) {
         return (
             <MDSpinner size={100}/>
         );
     }
     return (
         <div>
-            {messages.map((message: message) => {
+            {SubmitMessages.map((message: message) => {
                 const to_user = props.users.find((user) => user.id == message.to_id);
                 const To = () => {
                     if (to_user === undefined) {
