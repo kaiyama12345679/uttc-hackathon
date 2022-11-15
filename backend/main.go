@@ -47,13 +47,12 @@ type EditMessage struct {
 
 func init() {
 
-	godotenv.Load(".env")
 	mysqlUser := os.Getenv("MYSQL_USER")
 	mysqlPwd := os.Getenv("MYSQL_PWD")
 	mysqlHost := os.Getenv("MYSQL_HOST")
 	mysqlDatabase := os.Getenv("MYSQL_DATABASE")
 
-	connStr := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", mysqlUser, mysqlPwd, mysqlHost, mysqlDatabase)
+	connStr := fmt.Sprintf("%s:%s@%s/%s", mysqlUser, mysqlPwd, mysqlHost, mysqlDatabase)
 
 	// dbPool is the pool of database connections.
 	dbPool, err := sql.Open("mysql", connStr)
