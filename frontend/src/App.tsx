@@ -12,6 +12,7 @@ import { BrowserRouter , Routes, Route} from 'react-router-dom';
 import SignUpForm from "./SignupForm";
 import TopPage from "./TopPage";
 import UserProfile from "./User";
+import AccountEdit from "./AccountEdit";
 export const URL = "https://uttc-hackathon-v3glk6ae6a-uc.a.run.app/";
 
 export type userInfo = {
@@ -71,6 +72,7 @@ function App() {
         <Route path = "/" element = {<TopPage  Info={Info}   />} />
         <Route path = "/signup" element = {<SignUpForm />}/>
         <Route path = "/user" element = {<UserProfile  users = {users} />}/>
+        <Route path = "/user/account-edit" element = {<AccountEdit />}/>
       </Routes>
     </BrowserRouter>
     </div>

@@ -1,7 +1,6 @@
 import  * as React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
-import {Link} from "react-router-dom";
 import Button from "@mui/material/Button";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -14,6 +13,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {useLocation} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { UserId } from "./TopPage";
 import { userInfo } from "./App";
 import SubmitForm from "./post/MessagePost";
@@ -35,7 +35,6 @@ type Props = {
 
 }
 
-var messages : message[];
 
 export type state = {
     id: string
@@ -68,6 +67,8 @@ function TabPanel(props: TabPanelProps) {
     );
   }
 
+  
+
 const UserProfile = (props: Props) => {
     const [value, setValue] = useState(0);
     const theme = useTheme();
@@ -77,12 +78,18 @@ const UserProfile = (props: Props) => {
     };
     const location = useLocation();
     const messageState = location.state as state;
+    const navigate = useNavigate();
+
+    const onAccountClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        navigate("/user/account-edit", {state: messageState});
+    } 
 
         
     return (
         <Box sx={{  width: "100%" }}>
             <Container  sx={{ bgcolor: '#cfe8fc'}} className="User_Header">
-                こんにちは，<b>{messageState.name}</b>さん
+                <h3>こんにちは，<b>{messageState.name}</b>さん</h3>
+                <Button onClick={onAccountClick}>アカウントの編集</Button>
             </Container>
       <AppBar position="static">
         <Tabs

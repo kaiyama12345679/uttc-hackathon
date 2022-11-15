@@ -44,9 +44,13 @@ type EditMessage struct {
 	Message string `json:"message"`
 }
 
+type EditName struct {
+	Id      string `json:"id"`
+	NewName string `json:"new_name"`
+}
+
 func init() {
 
-	
 	mysqlUser := os.Getenv("MYSQL_USER")
 	mysqlPwd := os.Getenv("MYSQL_PWD")
 	mysqlHost := os.Getenv("MYSQL_HOST")
@@ -463,6 +467,78 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func accountEdit(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
+	//必要なメソッドを許可する
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+
+	switch r.Method {
+	case http.MethodOptions:
+		return
+	case http.MethodPut:
+		var editName EditName
+
+		if err := json.NewDecoder(r.Body).Decode(&editName); err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		cnt := 0
+		queStr := fmt.Sprintf("SELECT * FROM users WHERE name = '%v'", editName.NewName)
+		rows, err := db.Query(queStr)
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		for rows.Next() {
+			cnt += 1
+		}
+		if cnt > 1 {
+			w.WriteHeader(http.StatusConflict)
+			return
+		}
+
+		tx, err := db.Begin()
+		if err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		put, err := tx.Prepare("UPDATE users SET name = ? WHERE id = ?")
+		if err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		res, err := put.Exec(editName.NewName, editName.Id)
+		if err != nil {
+			tx.Rollback()
+			fmt.Print(err)
+			fmt.Println(res.LastInsertId())
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if err := tx.Commit(); err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+}
+
 func main() {
 	fmt.Println("Hello, World!")
 	http.HandleFunc("/api", handler)
@@ -470,6 +546,7 @@ func main() {
 	http.HandleFunc("/user/message", postHandler)
 	http.HandleFunc("/user/to", userToHandler)
 	http.HandleFunc("/signup", UserSignUp)
+	http.HandleFunc("/user/account-edit", accountEdit)
 
 	closeDBWithSyscall()
 
