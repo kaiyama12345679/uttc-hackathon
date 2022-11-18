@@ -11,6 +11,7 @@ import ListItemText from '@mui/material/ListItemText';
 import CommentIcon from '@mui/icons-material/Comment';
 import IconButton from '@mui/material/IconButton';
 import MDSpinner from "react-md-spinner";
+import { LoginForm } from "./LoginForm";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -100,6 +101,7 @@ const TopPage = (props: Props) => {
         <Button size="large"  component={Link} to="/signup" variant="contained">
             サインアップ
         </Button>
+        <br/>
         <MyBar />
       </Box>
     )
