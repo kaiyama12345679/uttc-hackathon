@@ -29,7 +29,7 @@ function App() {
       const get = async () => {
         console.log("init");
         const response = await fetch(
-          URL + "/api",
+          URL + "/toppage",
           {
             method: "GET",
             headers: {

@@ -30,7 +30,7 @@ const OnEditChange = (props: Props) => {
 
     const get = async () => {
         const response = await fetch(
-          URL + "/user/to",
+          URL + "/user/submitted",
           {
             method: "POST",
             headers: {
@@ -67,7 +67,7 @@ const pointMark = [
     const onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setLoading(true);
         const response = await fetch(
-          URL + "/user/to",
+          URL + "/user/submitted",
           {
             method: "PUT",
             headers: {
