@@ -46,7 +46,7 @@ const RecievedMessage = (props: Props) => {
                 resStatus = 0;
               const get = async () => {
                 const response = await fetch(
-                  URL + "/user",
+                  URL + "/recieved",
                   {
                     method: "POST",
                     headers: {

@@ -56,7 +56,7 @@ const SubmitForm = (props: Props) => {
         
             console.log("post start");
             const response = await fetch(
-                URL + "/user/message",
+                URL + "/user/post",
                 {
                     method: "POST",
                     headers: {

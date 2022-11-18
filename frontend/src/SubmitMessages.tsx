@@ -40,7 +40,7 @@ const SubmitMessage = (props: Props) => {
     const get = async () => {
         setChanging(true);
         const response = await fetch(
-          URL + "/user/to",
+          URL + "/user/submitted",
           {
             method: "POST",
             headers: {
@@ -82,7 +82,7 @@ const SubmitMessage = (props: Props) => {
         }
         setLoading(true);
         const response = await fetch(
-            URL + "/user/to", 
+            URL + "/user/submitted", 
             {
             method: "DELETE",
             headers: {
