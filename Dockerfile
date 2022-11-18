@@ -6,7 +6,7 @@ WORKDIR /app
 COPY ./backend/go.mod ./
 COPY ./backend/go.sum ./
 
-COPY ./backend/main.go ./
+COPY ./backend/ ./
 
 RUN go mod download
 
