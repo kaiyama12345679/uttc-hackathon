@@ -2,6 +2,7 @@ import React from "react";
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { fireAuth } from "./firebase";
 
+
 export const LoginForm: React.FC = () => {
   /**
    * googleでログインする
@@ -14,7 +15,6 @@ export const LoginForm: React.FC = () => {
     signInWithPopup(fireAuth, provider)
       .then(res => {
         const user = res.user;
-        alert("ログインユーザー: " + user.displayName);
       })
       .catch(err => {
         const errorMessage = err.message;

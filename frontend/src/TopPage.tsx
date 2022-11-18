@@ -10,6 +10,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import CommentIcon from '@mui/icons-material/Comment';
 import IconButton from '@mui/material/IconButton';
+import { onAuthStateChanged } from "firebase/auth";
+import { fireAuth } from "./firebase";
 import MDSpinner from "react-md-spinner";
 import { LoginForm } from "./LoginForm";
 import {
@@ -22,6 +24,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import { dividerClasses } from "@mui/material";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
@@ -52,13 +55,19 @@ type Props = {
 export const UserId = createContext("");
 const TopPage = (props: Props) => {
     const navigate = useNavigate();
+
+    const [loginUser, setLoginUser] = React.useState(fireAuth.currentUser);
     if (props.Info == null ) {
         return (
             <MDSpinner size={100}/>
         )
     }
+
+    onAuthStateChanged(fireAuth, user => {
+      setLoginUser(user);
+      console.log(user);
+    });
     const onSubmit = async (id: string, name: string) => {
-      console.log("onSubmit");
       navigate("/user", {state: {id: id, name: name}});
     };
 
@@ -78,6 +87,29 @@ const TopPage = (props: Props) => {
       <Bar data={data} options={options} />
     )    
     }
+
+    const ToUserPage = () => {
+      if (loginUser == null) {
+        return (
+        <LoginForm />
+        )
+      } else if (loginUser.photoURL != null){
+        return (
+          <div>
+            <LoginForm />
+          <Link to="/user" state={{id: loginUser}}>ユーザーページへ</Link>
+          <img src={loginUser.photoURL} alt="" />
+          </div>
+        ) 
+      } else {
+        return (
+          <div>
+            <LoginForm />
+          <Link to="/user" state={{id: loginUser}}>ユーザーページへ</Link>
+          </div>
+        )
+      }
+    };
     
     const UserList = () => {
       return (
@@ -86,9 +118,6 @@ const TopPage = (props: Props) => {
     <ListItem
       key={user.id}
       disableGutters={false}
-      secondaryAction={
-        <Button   color="secondary" variant="contained" onClick={() => onSubmit(user.id, user.name)}>ログイン</Button>
-      }
     >
       <ListItemText primary={user.name} />
     </ListItem>
@@ -102,6 +131,7 @@ const TopPage = (props: Props) => {
             サインアップ
         </Button>
         <br/>
+        <ToUserPage/>
         <MyBar />
       </Box>
     )
