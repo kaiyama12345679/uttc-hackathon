@@ -6,6 +6,13 @@ type UserResForHTTPGet struct {
 	Points int    `json:"points"`
 }
 
+type UserDetail struct {
+	Id string `json:"id"`
+	Name string `json:"id"`
+	Email string `json:"email_address"`
+	PUrl string `json:"photo_url"`
+}
+
 type UserMessage struct {
 	Id         string `json:"id"`
 	FId        string `json:"from_id"`

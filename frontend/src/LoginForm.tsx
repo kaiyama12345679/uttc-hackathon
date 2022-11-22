@@ -10,11 +10,12 @@ export const LoginForm: React.FC = () => {
   const signInWithGoogle = (): void => {
     // Google認証プロバイダを利用する
     const provider = new GoogleAuthProvider();
+    
 
     // ログイン用のポップアップを表示
     signInWithPopup(fireAuth, provider)
       .then(res => {
-        const user = res.user;
+        console.log("ResUser", res.user);
       })
       .catch(err => {
         const errorMessage = err.message;

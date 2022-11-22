@@ -6,12 +6,13 @@ import Button from "@mui/material/Button";
 import SendIcon from '@mui/icons-material/Send';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {URL} from "./App";
+import { fireAuth } from "./firebase";
+import {LoginForm} from "./LoginForm";
 
 const SignUpForm = () => {
     const [user, setUser] = useState("");
+    const [loginUser, setLoginUser] = React.useState(fireAuth.currentUser);
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
-
     const onSubmit = async (submit: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             console.log("post start");
             if (user == "") {
@@ -54,6 +55,7 @@ const SignUpForm = () => {
     };
     return (
         <div>
+            <LoginForm/>
         <div className="SignUpForm">
             <h1>ユーザー名の登録</h1>
             <TextField id="filled-basic" label="登録するユーザー名を入力" placeholder="神座出流" variant="filled" value={user} onChange={myChange}/>

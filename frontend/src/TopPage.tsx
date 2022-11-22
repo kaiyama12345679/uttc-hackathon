@@ -26,6 +26,7 @@ import {
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { dividerClasses } from "@mui/material";
+import { FmdBadTwoTone, Http } from "@mui/icons-material";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
@@ -53,6 +54,13 @@ export const options = {
 type Props = {
     Info: userInfo[]
 }
+
+type UserDetail = {
+  id: string,
+  name: string,
+  email_address: string,
+  photo_url: string
+};
 
 function stringToColor(string: string) {
   let hash = 0;
@@ -87,6 +95,35 @@ const TopPage = (props: Props) => {
     const navigate = useNavigate();
 
     const [loginUser, setLoginUser] = React.useState(fireAuth.currentUser);
+    const [authUser, setAuthUser] = React.useState<UserDetail | undefined>(undefined);
+
+    useEffect(() => {
+      const confirm = async () => {
+        const response = await fetch(
+          URL + "/toppage",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const res_status = response.status;
+        if (res_status == 500) {
+          alert("問題が発生しました．もう一度やり直してください")
+        } else if (res_status == 409) {
+          alert ("重複したユーザが見つかりました")
+        } else if (res_status == 204) {
+          alert("ユーザが見つかりません．サインアップから登録をお願いいたします。")
+        } else {
+          setAuthUser(await response.json());
+          console.log(authUser);
+        }
+      };
+      confirm();
+      }
+    , [loginUser]);
+
     if (props.Info == null ) {
         return (
             <MDSpinner size={100}/>
@@ -98,7 +135,9 @@ const TopPage = (props: Props) => {
       console.log(user);
     });
     const onSubmit = async (id: string, name: string) => {
-      navigate("/user", {state: {id: id, name: name}});
+      if (authUser != undefined) {
+        navigate("/user", {state: {id: authUser.id, name: authUser.name}})
+      }
     };
 
     const MyBar = () => {
@@ -128,7 +167,7 @@ const TopPage = (props: Props) => {
           <div>
             <LoginForm />
           <Link to="/user" state={{id: loginUser}}>ユーザーページへ</Link>
-          <Avatar  src={loginUser.photoURL}/>
+          <Avatar src={loginUser.photoURL}/>
           </div>
         ) 
       } else {
