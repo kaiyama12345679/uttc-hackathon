@@ -20,6 +20,7 @@ export type userInfo = {
   name: string,
   points: number,
 }
+
 let Info: userInfo[];
 function App() {
   const [update, setUpdate] = useState<boolean>(false);

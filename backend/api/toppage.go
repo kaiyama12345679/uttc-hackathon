@@ -77,7 +77,56 @@ func TopPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.WriteHeader(http.StatusOK)
 		w.Write(bytes)
 
-		return
+	
+	case http.MethodPut:
+		var e string
+		if err := json.NewDecoder(r.Body).Decode(&e); err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		queStr = fmt.Sprintf("SELECT * FROM users WHERE email_address = %v", e)
+		rows, err := db.Query(queStr)
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		
+		}
+		defer rows.Close()
+		var cnt int
+		
+		var userDetail mystruct.UserDetail
+		for rows.Next() {
+			var u mystruct.UserDetail
+			cnt += 1
+			if (cnt >= 2) {
+				w.WriteHeader(http.StatusConflict)
+				return
+			}
+			if err := rows.Scan(&u.Id, &u.Name, &u.Email, &u.PUrl); err != nil {
+				fmt.Println(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			userDetail = u
+		}
+
+		if cnt == 0 {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		bytes, err := json.Marshal(userDetail)
+		if err != nil {
+			log.Printf("fail: json, Marshal, %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(bytes)
+		w.WriteHeader(http.StatusOK)
+
 	default:
 		return
 	}

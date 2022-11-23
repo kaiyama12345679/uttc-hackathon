@@ -1,0 +1,15 @@
+version: '3'
+services:
+  front:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - node_modules:/code/node_modules
+      - .:/code
+    ports:
+      - "3000:3000"
+    command: npm start
+
+volumes:
+  node_modules:
