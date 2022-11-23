@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import {Link, useNavigate} from "react-router-dom";
 import TextField from "@mui/material/TextField";
@@ -24,6 +24,7 @@ type Props = {
 const SignUpForm = (props: Props) => {
     const [newName, setNewName] = useState("");
     const [loading, setLoading] = useState(false);
+
 
     const onSubmit = async (submit: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             if (newName == "") {
@@ -92,11 +93,11 @@ const SignUpForm = (props: Props) => {
         <div>
             <LoginForm/>
             <UserProfile/>
-        <div className="SignUpForm">
+        <div className="SignUpForm" >
             <h1>ユーザー名の登録</h1>
-            <TextField id="filled-basic" label="登録するユーザー名を入力" placeholder="神座出流" variant="filled" value={newName} onChange={myChange}/>
+            <TextField id="filled-basic" label="登録するユーザー名を入力" placeholder="神座出流" variant="filled" value={newName} onChange={myChange} disabled={props.loginUser?false:true}/>
             <h2>登録するユーザー名:<b>{newName}</b></h2>
-            <LoadingButton variant="contained" color="inherit" size="large" loading={loading} endIcon={<SendIcon/>} onClick={onSubmit}>
+            <LoadingButton variant="contained" color="inherit" size="large" loading={loading} endIcon={<SendIcon/>} onClick={onSubmit} disabled={props.loginUser?false:true}>
                 ユーザーの登録
                 </LoadingButton>
         </div>

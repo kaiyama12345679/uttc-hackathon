@@ -2,7 +2,7 @@ import React from "react";
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import Button from "@mui/material/Button";
 import { fireAuth } from "./firebase";
-
+import GoogleIcon from '@mui/icons-material/Google';
 
 export const LoginForm: React.FC = () => {
   /**
@@ -36,7 +36,7 @@ export const LoginForm: React.FC = () => {
 
   return (
     <div>
-      <Button variant="contained" color="info" size="large" onClick={signInWithGoogle}>
+      <Button variant="contained" color="info" size="large" onClick={signInWithGoogle} endIcon={<GoogleIcon/>}>
         Googleでログイン
       </Button>
       <Button onClick={signOutWithGoogle} variant="contained" color="error" size="small">

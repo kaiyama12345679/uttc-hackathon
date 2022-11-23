@@ -11,6 +11,11 @@ import ListItemText from '@mui/material/ListItemText';
 import CommentIcon from '@mui/icons-material/Comment';
 import IconButton from '@mui/material/IconButton';
 import { AuthCredential, onAuthStateChanged } from "firebase/auth";
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Typography from '@mui/material/Typography';
 import { fireAuth } from "./firebase";
 import MDSpinner from "react-md-spinner";
 import { LoginForm } from "./LoginForm";
@@ -149,11 +154,24 @@ const TopPage = (props: Props) => {
         return (
           <div>
             <LoginForm />
-          <Avatar src={authUser.photo_url} style={{margin: "auto"}}/>
-          <h3><b>{authUser.name}</b>さん，こんにちは</h3>
-          <h4>Googleアカウント名: {props.loginUser?props.loginUser.displayName:""}</h4>
-          <h4>Gmailアドレス: {authUser.email_address}</h4>
+            <Card sx={{ maxWidth: 345 }} style={{margin: "auto"}}>
+      <CardMedia
+        component="img"
+        height="140"
+        image={authUser.photo_url}
+        alt="green iguana"
+      />
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+        <b>{authUser.name}</b>さん
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+        <h6>Googleアカウント名: {props.loginUser?props.loginUser.displayName:""}</h6>
+          <h6>Gmailアドレス: {authUser.email_address}</h6>
+        </Typography>
+      </CardContent>
           <Button size="large" variant="contained" color="success" onClick={onSubmit}>ユーザーページへ</Button>
+          </Card>
           </div>
         ) 
     }};
