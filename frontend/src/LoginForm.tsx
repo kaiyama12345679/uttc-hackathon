@@ -30,6 +30,7 @@ export const LoginForm: React.FC = () => {
     signOut(fireAuth).then(() => {
       alert("ログアウトしました");
     }).catch(err => {
+      alert("エラーが発生しました:" + err);
     });
   };
 

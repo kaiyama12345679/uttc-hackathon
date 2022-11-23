@@ -11,6 +11,7 @@ import { useTheme } from '@mui/material/styles';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
+import Avatar from '@mui/material/Avatar';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {useLocation} from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -32,13 +33,15 @@ export type message = {
 
 type Props = {
     users: userInfo[],
-
+    loginUser: any
 }
 
 
 export type state = {
     id: string
     name: string
+    email: string
+    photo_url: string
 }
 
 interface TabPanelProps {
@@ -70,8 +73,12 @@ function TabPanel(props: TabPanelProps) {
   
 
 const UserProfile = (props: Props) => {
+  
     const [value, setValue] = useState(0);
     const theme = useTheme();
+    if (props.loginUser == null) {
+      document.location.href = "/";
+    }
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -88,6 +95,7 @@ const UserProfile = (props: Props) => {
     return (
         <Box sx={{  width: "100%" }}>
             <Container  sx={{ bgcolor: '#cfe8fc'}} className="User_Header">
+                <Avatar src={messageState.photo_url}/>
                 <h3>こんにちは，<b>{messageState.name}</b>さん</h3>
                 <Button onClick={onAccountClick}>アカウントの編集</Button>
             </Container>

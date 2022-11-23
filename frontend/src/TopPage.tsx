@@ -54,6 +54,7 @@ export const options = {
 
 type Props = {
     Info: userInfo[]
+    loginUser: any
 }
 
 type UserDetail = {
@@ -63,39 +64,11 @@ type UserDetail = {
   photo_url: string
 };
 
-function stringToColor(string: string) {
-  let hash = 0;
-  let i;
 
-  /* eslint-disable no-bitwise */
-  for (i = 0; i < string.length; i += 1) {
-    hash = string.charCodeAt(i) + ((hash << 5) - hash);
-  }
-
-  let color = '#';
-
-  for (i = 0; i < 3; i += 1) {
-    const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.slice(-2);
-  }
-  /* eslint-enable no-bitwise */
-
-  return color;
-}
-
-function stringAvatar(name: string) {
-  return {
-    sx: {
-      bgcolor: stringToColor(name),
-    },
-    children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
-  };
-}
 export const UserId = createContext("");
 const TopPage = (props: Props) => {
     const navigate = useNavigate();
 
-    const [loginUser, setLoginUser] = React.useState(fireAuth.currentUser);
     const [authUser, setAuthUser] = React.useState<UserDetail | undefined >(undefined);
     const [authCnd, setAuThCnd] = React.useState<string>("認証していません");
 
@@ -110,7 +83,7 @@ const TopPage = (props: Props) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(
-              loginUser?loginUser.email:"hoge"
+              props.loginUser?props.loginUser.email:"hoge"
             )
           }
         );
@@ -128,14 +101,14 @@ const TopPage = (props: Props) => {
           console.log("authUser",authUser);
         }
       };
-      if (loginUser == null) {
+      if (props.loginUser == null) {
         setAuThCnd("認証していません");
         setAuthUser(undefined);
       } else {
         confirm();
       }
       }
-    , [loginUser]);
+    , [props.loginUser]);
 
     if (props.Info == null ) {
         return (
@@ -143,12 +116,10 @@ const TopPage = (props: Props) => {
         )
     }
 
-    onAuthStateChanged(fireAuth, user => {
-      setLoginUser(user);
-    });
+    
     const onSubmit = (submit: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       if (authUser != undefined) {
-        navigate("/user", {state: {id: authUser.id, name: authUser.name}})
+        navigate("/user", {state: {id: authUser.id, name: authUser.name, email: authUser.email_address, photo_url: authUser.photo_url}})
       }
     };
 
@@ -178,9 +149,11 @@ const TopPage = (props: Props) => {
         return (
           <div>
             <LoginForm />
-          <h3>{authUser.name}さん，こんにちは</h3>
-          <Button onClick={onSubmit}>ユーザーページへ</Button>
           <Avatar src={authUser.photo_url}/>
+          <h3>{authUser.name}さん，こんにちは</h3>
+          <h4>Googleアカウント名: {props.loginUser.displayName}</h4>
+          <h4>Gmailアドレス: {authUser.email_address}</h4>
+          <Button size="large" variant="contained" color="success" onClick={onSubmit}>ユーザーページへ</Button>
           </div>
         ) 
     }};
@@ -195,6 +168,7 @@ const TopPage = (props: Props) => {
     >
       <Avatar src={user.photo_url}/>
       <ListItemText primary={user.name} />
+      <a href={"mailto:" + user.email_address}>メールはこちら</a>
     </ListItem>
   ))}
 </List> )};
@@ -206,8 +180,8 @@ const TopPage = (props: Props) => {
             サインアップ
         </Button>
         <br/>
+        <h3>{authCnd}</h3>
         <ToUserPage/>
-        <h1>{authCnd}</h1>
         <MyBar />
       </Box>
     )

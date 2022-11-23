@@ -17,16 +17,15 @@ type NewUser = {
     email_address: string | null
     photo_url: string | null
 }
+type Props = {
+    loginUser: any
+}
 
-const SignUpForm = () => {
+const SignUpForm = (props: Props) => {
     const [newName, setNewName] = useState("");
-    const [loginUser, setLoginUser] = React.useState(fireAuth.currentUser);
     const [loading, setLoading] = useState(false);
-    onAuthStateChanged(fireAuth, u => {
-        setLoginUser(u);
-      });
+
     const onSubmit = async (submit: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-            console.log("post start");
             if (newName == "") {
                 alert("ユーザー名は一文字以上必要です");
                 return;
@@ -35,12 +34,12 @@ const SignUpForm = () => {
             if (!ans) {
                 return;
             }
-            if (loginUser == null) {
+            if (props.loginUser == null) {
                 alert("Googleアカウントでログインしてください。")
                 return
             }
             setLoading(true);
-            const tmp: NewUser = {name: newName, email_address: loginUser.email, photo_url: loginUser.photoURL}
+            const tmp: NewUser = {name: newName, email_address: props.loginUser.email, photo_url: props.loginUser.photoURL}
             
             const response = await fetch(
                 URL + "/signup",
@@ -74,7 +73,7 @@ const SignUpForm = () => {
         setNewName(e.target.value);
     };
     const UserProfile = () => {
-        if (loginUser == null) {
+        if (props.loginUser == null) {
             return (
                 <h3>Googleアカウントでログインしてください</h3>
             )
@@ -82,10 +81,10 @@ const SignUpForm = () => {
             return (
                 <div>
                     <div>
-                    <Avatar src={loginUser.photoURL?loginUser.photoURL:""}/>
+                    <Avatar src={props.loginUser.photoURL?props.loginUser.photoURL:""}/>
                     </div>
-                    <h4>Googleアカウント名:{loginUser.displayName}</h4>
-                    <h4>Gmailアドレス: {loginUser.email}</h4>
+                    <h4>Googleアカウント名:{props.loginUser.displayName}</h4>
+                    <h4>Gmailアドレス: {props.loginUser.email}</h4>
                 </div>            )
         }
     }

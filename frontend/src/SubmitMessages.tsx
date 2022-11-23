@@ -13,6 +13,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Avatar from '@mui/material/Avatar';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { userInfo } from "./App";
 import SubmitForm from "./post/MessagePost";
@@ -124,14 +125,6 @@ const SubmitMessage = (props: Props) => {
         <div>
             {SubmitMessages.map((message: message) => {
                 const to_user = props.users.find((user) => user.id == message.to_id);
-                const To = () => {
-                    if (to_user === undefined) {
-                        return "loading"
-                    }
-                    else {
-                        return to_user.name
-                    }
-                };
                 
             return (
                 <Accordion  key={message.id} expanded={expanded === message.id} onChange={handleAcChange(message.id)}>
@@ -141,7 +134,7 @@ const SubmitMessage = (props: Props) => {
             id="panel1bh-header"
             >
             <Typography sx={{ width: '33%', flexShrink: 0 }}>
-                送信先: <b>{To()}</b>さんに
+                送信先: <Avatar src={to_user?to_user.photo_url:""}/><b>{to_user?to_user.name:""}</b>さんに
             </Typography>
             <Typography sx={{ color: 'text.secondary' }}><b>{message.point}</b> ポイントを贈りました！</Typography>
             <Typography sx={{ color: 'text.secondary' }}>時刻:<b>{message.posted_time}</b></Typography>

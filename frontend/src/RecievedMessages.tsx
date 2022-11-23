@@ -12,6 +12,7 @@ import { useTheme } from '@mui/material/styles';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
+import Avatar from '@mui/material/Avatar';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MDSpinner from "react-md-spinner";
 import { userInfo } from "./App";
@@ -75,14 +76,6 @@ const RecievedMessage = (props: Props) => {
         <div>
             {Messages.map((message: message) => {
                 const from_user = props.users.find((user) => user.id == message.from_id);
-                const From = () => {
-                    if (from_user === undefined) {
-                        return "loading"
-                    }
-                    else {
-                        return from_user.name
-                    }
-                }
             return (
                 <Accordion  key={message.id} expanded={expanded === message.id} onChange={handleAcChange(message.id)}>
             <AccordionSummary
@@ -91,7 +84,8 @@ const RecievedMessage = (props: Props) => {
             id="panel1bh-header"
             >
             <Typography sx={{ width: '33%', flexShrink: 0 }}>
-                贈り主: <b>{From()}</b>さんから
+                贈り主: 
+                <Avatar src={from_user?from_user.photo_url:""}/><b>{from_user?from_user.name:""}</b>さんから
             </Typography>
             <Typography sx={{ color: 'text.secondary' }}><b>{message.point}</b>ポイントが贈られました！</Typography>
             <Typography sx={{ color: 'text.secondary' }}>時刻:<b>{message.posted_time}</b></Typography>

@@ -8,12 +8,14 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import { AuthCredential, onAuthStateChanged } from "firebase/auth";
+import { fireAuth } from "./firebase";
 import { BrowserRouter , Routes, Route} from 'react-router-dom';
 import SignUpForm from "./SignupForm";
 import TopPage from "./TopPage";
 import UserProfile from "./User";
 import AccountEdit from "./AccountEdit";
-export const URL = "https://uttc-hackathon-v3glk6ae6a-uc.a.run.app/";
+export const URL = process.env.REACT_APP_URL;
 
 export type userInfo = {
   id: string,
@@ -27,6 +29,11 @@ let Info: userInfo[];
 function App() {
   const [update, setUpdate] = useState<boolean>(false);
   const [users, setUser] = useState<userInfo[]>([]);
+
+  const [loginUser, setLoginUser] = React.useState(fireAuth.currentUser);
+  onAuthStateChanged(fireAuth, u => {
+    setLoginUser(u);
+  });
   useEffect(
     () => {
       const get = async () => {
@@ -39,7 +46,6 @@ function App() {
             },
           }
         );
-        console.log("情報", await response.json());
         const info: userInfo[] = await response.json();
         Info = info;
         setUser(info);
@@ -70,10 +76,10 @@ function App() {
       <Header  />
       <BrowserRouter>
       <Routes >
-        <Route path = "/" element = {<TopPage  Info={Info}   />} />
-        <Route path = "/signup" element = {<SignUpForm />}/>
-        <Route path = "/user" element = {<UserProfile  users = {users} />}/>
-        <Route path = "/user/account-edit" element = {<AccountEdit />}/>
+        <Route path = "/" element = {<TopPage  Info={Info}   loginUser={loginUser}/>} />
+        <Route path = "/signup" element = {<SignUpForm  loginUser={loginUser}/>}/>
+        <Route path = "/user" element = {<UserProfile  users = {users} loginUser={loginUser}/>}/>
+        <Route path = "/user/account-edit" element = {<AccountEdit loginUser={loginUser}/>}/>
       </Routes>
     </BrowserRouter>
     </div>

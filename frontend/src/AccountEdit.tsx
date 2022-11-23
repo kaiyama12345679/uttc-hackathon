@@ -8,7 +8,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {Link} from "react-router-dom";
 import {state} from "./User";
-const AccountEdit = () => {
+
+type Props = {
+    loginUser: any
+}
+const AccountEdit = (props: Props) => {
+
+    if (props.loginUser == null) {
+        document.location.href = "/";
+    }
     const location = useLocation();
     const navigate = useNavigate();
     const messageState = location.state as state;
