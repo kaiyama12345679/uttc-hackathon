@@ -4,13 +4,21 @@ type UserResForHTTPGet struct {
 	Id     string `json:"id"`
 	Name   string `json:"name"`
 	Points int    `json:"points"`
+	Email  string `json:"email_address"`
+	PUrl   string `json:"photo_url"`
 }
 
 type UserDetail struct {
-	Id string `json:"id"`
-	Name string `json:"id"`
+	Id    string `json:"id"`
+	Name  string `json:"name"`
 	Email string `json:"email_address"`
-	PUrl string `json:"photo_url"`
+	PUrl  string `json:"photo_url"`
+}
+
+type NewUser struct {
+	Name  string `json:"name"`
+	Email string `json:"email_address"`
+	PUrl  string `json:"photo_url"`
 }
 
 type UserMessage struct {
