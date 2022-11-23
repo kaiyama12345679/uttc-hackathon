@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"main/struct"
+	mystruct "main/struct"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -21,7 +21,7 @@ func TopPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	case http.MethodOptions:
 		return
 	case http.MethodGet:
-		rows, err := db.Query("SELECT users.id, users.name, IFNULL(SUM(messages.point), 0) FROM users LEFT JOIN messages ON users.id = messages.to_id GROUP BY users.id")
+		rows, err := db.Query("SELECT users.id, users.name, IFNULL(SUM(messages.point), 0) users.email_address, users.photo_url FROM users LEFT JOIN messages ON users.id = messages.to_id GROUP BY users.id")
 		if err != nil {
 			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -32,7 +32,7 @@ func TopPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 		for rows.Next() {
 			var u mystruct.UserResForHTTPGet
-			if err := rows.Scan(&u.Id, &u.Name, &u.Points); err != nil {
+			if err := rows.Scan(&u.Id, &u.Name, &u.Points, &u.Email, &u.PUrl); err != nil {
 				log.Printf("fail: rows.Scan, %v\n", err)
 				if err := rows.Close(); err != nil {
 					log.Printf("fail: rows.Close(), %v\n", err)
