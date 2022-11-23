@@ -40,7 +40,6 @@ function App() {
         const info: userInfo[] = await response.json();
         Info = info;
         setUser(info);
-        console.table(Info);
         setUpdate(update? false: true);
       }
       get();

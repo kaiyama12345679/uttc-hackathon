@@ -43,7 +43,7 @@ export const options = {
   plugins: {
     title: {
       display: true,
-      text: '総獲得ポイント',
+      text: '総獲得ポイント一覧',
       font: {size: 30},
     },
     labels: {

@@ -4,10 +4,12 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/oklog/ulid"
+	mystruct "main/struct"
 	"math/rand"
 	"net/http"
 	"time"
+
+	"github.com/oklog/ulid"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -23,29 +25,39 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	case http.MethodOptions:
 		return
 	case http.MethodPost:
-		var user string
+		var newUser mystruct.NewUser
 
-		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		if err := json.NewDecoder(r.Body).Decode(&newUser); err != nil {
 			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		queStr := fmt.Sprintf("SELECT * FROM users WHERE name = '%v'", user)
-
+		queStr := fmt.Sprintf("SELECT * FROM users WHERE email_address = '%v'", newUser.Email)
+		queStr2 := fmt.Sprintf("SELECT * FROM users WHERE name = '%v'", newUser.Name)
 		rows, err := db.Query(queStr)
-		if err != nil {
+		rows2, err2 := db.Query(queStr2)
+		if err != nil || err2 != nil {
 			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		defer rows.Close()
+		defer rows2.Close()
 		cnt := 0
 		for rows.Next() {
 			cnt += 1
 		}
 		if cnt >= 1 {
 			w.WriteHeader(http.StatusConflict)
+			return
+		}
+		cnt = 0
+		for rows2.Next() {
+			cnt += 1
+		}
+		if cnt >= 1 {
+			w.WriteHeader(http.StatusPreconditionFailed)
 			return
 		}
 		tx, err := db.Begin()
@@ -56,7 +68,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		ins, err := tx.Prepare("INSERT INTO users (id, name) VALUES (?, ?)")
+		ins, err := tx.Prepare("INSERT INTO users (id, name, email_address, photo_url) VALUES (?, ?, ?, ?)")
 
 		if err != nil {
 			tx.Rollback()
@@ -67,7 +79,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		t := time.Now()
 		entropy := ulid.Monotonic(rand.New(rand.NewSource(t.UnixNano())), 0)
 		id := ulid.MustNew(ulid.Timestamp(t), entropy).String()
-		res, err := ins.Exec(id, user)
+		res, err := ins.Exec(id, newUser.Name, newUser.Email, newUser.PUrl)
 
 		if err != nil {
 			tx.Rollback()
