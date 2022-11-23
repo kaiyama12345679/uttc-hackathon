@@ -21,7 +21,7 @@ func TopPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	case http.MethodOptions:
 		return
 	case http.MethodGet:
-		rows, err := db.Query("SELECT users.id, users.name, IFNULL(SUM(messages.point), 0) users.email_address, users.photo_url FROM users LEFT JOIN messages ON users.id = messages.to_id GROUP BY users.id")
+		rows, err := db.Query("SELECT users.id, users.name, IFNULL(SUM(messages.point), 0), users.email_address, users.photo_url FROM users LEFT JOIN messages ON users.id = messages.to_id GROUP BY users.id")
 		if err != nil {
 			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)

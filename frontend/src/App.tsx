@@ -39,6 +39,7 @@ function App() {
             },
           }
         );
+        console.log("情報", await response.json());
         const info: userInfo[] = await response.json();
         Info = info;
         setUser(info);
