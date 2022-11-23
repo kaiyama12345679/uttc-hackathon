@@ -1,5 +1,6 @@
 import React from "react";
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import Button from "@mui/material/Button";
 import { fireAuth } from "./firebase";
 
 
@@ -19,7 +20,6 @@ export const LoginForm: React.FC = () => {
       })
       .catch(err => {
         const errorMessage = err.message;
-        alert(errorMessage);
       });
   };
 
@@ -36,12 +36,12 @@ export const LoginForm: React.FC = () => {
 
   return (
     <div>
-      <button onClick={signInWithGoogle}>
+      <Button variant="contained" color="info" size="large" onClick={signInWithGoogle}>
         Googleでログイン
-      </button>
-      <button onClick={signOutWithGoogle}>
+      </Button>
+      <Button onClick={signOutWithGoogle} variant="contained" color="error" size="small">
         ログアウト
-      </button>
+      </Button>
     </div>
   );
 };

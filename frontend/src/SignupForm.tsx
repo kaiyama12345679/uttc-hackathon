@@ -81,7 +81,7 @@ const SignUpForm = (props: Props) => {
             return (
                 <div>
                     <div>
-                    <Avatar src={props.loginUser.photoURL?props.loginUser.photoURL:""}/>
+                    <Avatar src={props.loginUser.photoURL?props.loginUser.photoURL:""} style={{margin: "auto"}}/>
                     </div>
                     <h4>Googleアカウント名:{props.loginUser.displayName}</h4>
                     <h4>Gmailアドレス: {props.loginUser.email}</h4>

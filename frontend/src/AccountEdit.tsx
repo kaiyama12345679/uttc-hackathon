@@ -14,9 +14,6 @@ type Props = {
 }
 const AccountEdit = (props: Props) => {
 
-    if (props.loginUser == null) {
-        document.location.href = "/";
-    }
     const location = useLocation();
     const navigate = useNavigate();
     const messageState = location.state as state;
@@ -26,6 +23,13 @@ const AccountEdit = (props: Props) => {
     const myInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNew_name(e.target.value as string);
     };
+
+    if (props.loginUser == null || props.loginUser.email != messageState.email) {
+        document.location.href = "/";
+        return (
+            <div>遷移中</div>
+        )
+    }
     const onBackChange = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         navigate("/user", {state: messageState});
     };
@@ -106,7 +110,7 @@ const AccountEdit = (props: Props) => {
         <Box>
             <LoadingButton onClick={onDeleteChange} variant="contained" size="large" color="error" loading={loading} startIcon={<DeleteIcon />}>アカウントを削除</LoadingButton>
         </Box>
-        <Button onClick={onBackChange}>ユーザ画面に戻る</Button>
+        <Button onClick={onBackChange} variant="contained">ユーザ画面に戻る</Button>
         </div>
         
     )

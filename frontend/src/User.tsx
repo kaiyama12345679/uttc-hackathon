@@ -76,9 +76,6 @@ const UserProfile = (props: Props) => {
   
     const [value, setValue] = useState(0);
     const theme = useTheme();
-    if (props.loginUser == null) {
-      document.location.href = "/";
-    }
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -86,6 +83,13 @@ const UserProfile = (props: Props) => {
     const location = useLocation();
     const messageState = location.state as state;
     const navigate = useNavigate();
+
+    if (props.loginUser == null || props.loginUser.email != messageState.email) {
+      document.location.href = "/";
+      return (
+        <div>遷移中</div>
+      )
+    }
 
     const onAccountClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         navigate("/user/account-edit", {state: messageState});
@@ -95,9 +99,9 @@ const UserProfile = (props: Props) => {
     return (
         <Box sx={{  width: "100%" }}>
             <Container  sx={{ bgcolor: '#cfe8fc'}} className="User_Header">
-                <Avatar src={messageState.photo_url}/>
+                <Avatar src={messageState.photo_url} style={{margin: "auto"}}/>
                 <h3>こんにちは，<b>{messageState.name}</b>さん</h3>
-                <Button onClick={onAccountClick}>アカウントの編集</Button>
+                <Button onClick={onAccountClick} variant="contained" color="secondary">アカウントの編集</Button>
             </Container>
       <AppBar position="static">
         <Tabs

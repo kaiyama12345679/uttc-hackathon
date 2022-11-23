@@ -97,7 +97,7 @@ const TopPage = (props: Props) => {
           setAuThCnd("ユーザが見つかりません．サインアップから登録をお願いいたします。");
         } else {
           setAuthUser(await response.json());
-          setAuThCnd("認証に成功しました！");
+          setAuThCnd("ログイン済");
           console.log("authUser",authUser);
         }
       };
@@ -149,9 +149,9 @@ const TopPage = (props: Props) => {
         return (
           <div>
             <LoginForm />
-          <Avatar src={authUser.photo_url}/>
-          <h3>{authUser.name}さん，こんにちは</h3>
-          <h4>Googleアカウント名: {props.loginUser.displayName}</h4>
+          <Avatar src={authUser.photo_url} style={{margin: "auto"}}/>
+          <h3><b>{authUser.name}</b>さん，こんにちは</h3>
+          <h4>Googleアカウント名: {props.loginUser?props.loginUser.displayName:""}</h4>
           <h4>Gmailアドレス: {authUser.email_address}</h4>
           <Button size="large" variant="contained" color="success" onClick={onSubmit}>ユーザーページへ</Button>
           </div>
@@ -174,7 +174,8 @@ const TopPage = (props: Props) => {
 </List> )};
     return (
       <Box>
-        <h1>トップページです</h1>
+        <h1>トップページ</h1>
+        <h3>ユーザー一覧</h3>
           <UserList/>
         <Button size="large"  component={Link} to="/signup" variant="contained" >
             サインアップ
