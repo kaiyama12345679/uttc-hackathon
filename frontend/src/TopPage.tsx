@@ -27,6 +27,7 @@ import {
 import { Bar } from 'react-chartjs-2';
 import { dividerClasses } from "@mui/material";
 import { FmdBadTwoTone, Http } from "@mui/icons-material";
+import {URL} from "./App";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
