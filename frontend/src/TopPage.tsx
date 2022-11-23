@@ -10,7 +10,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import CommentIcon from '@mui/icons-material/Comment';
 import IconButton from '@mui/material/IconButton';
-import { onAuthStateChanged } from "firebase/auth";
+import { AuthCredential, onAuthStateChanged } from "firebase/auth";
 import { fireAuth } from "./firebase";
 import MDSpinner from "react-md-spinner";
 import { LoginForm } from "./LoginForm";
@@ -96,7 +96,8 @@ const TopPage = (props: Props) => {
     const navigate = useNavigate();
 
     const [loginUser, setLoginUser] = React.useState(fireAuth.currentUser);
-    const [authUser, setAuthUser] = React.useState<UserDetail | undefined>(undefined);
+    const [authUser, setAuthUser] = React.useState<UserDetail | undefined >(undefined);
+    const [authCnd, setAuThCnd] = React.useState<string>("認証していません");
 
     useEffect(() => {
       const confirm = async () => {
@@ -116,17 +117,23 @@ const TopPage = (props: Props) => {
         const res_status = response.status;
         console.log("response", response.status);
         if (res_status == 500) {
-          alert("問題が発生しました．もう一度やり直してください")
+          setAuThCnd("問題が発生しました．もう一度やり直してください");
         } else if (res_status == 409) {
-          alert ("重複したユーザが見つかりました")
+          setAuThCnd("重複したユーザーが存在します．システムの管理者に問い合わせてください")
         } else if (res_status == 204) {
-          alert("ユーザが見つかりません．サインアップから登録をお願いいたします。")
+          setAuThCnd("ユーザが見つかりません．サインアップから登録をお願いいたします。");
         } else {
           setAuthUser(await response.json());
+          setAuThCnd("認証に成功しました！");
           console.log("authUser",authUser);
         }
       };
-      confirm();
+      if (loginUser == null) {
+        setAuThCnd("認証していません");
+        setAuthUser(undefined);
+      } else {
+        confirm();
+      }
       }
     , [loginUser]);
 
@@ -139,7 +146,7 @@ const TopPage = (props: Props) => {
     onAuthStateChanged(fireAuth, user => {
       setLoginUser(user);
     });
-    const onSubmit = async (id: string, name: string) => {
+    const onSubmit = (submit: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       if (authUser != undefined) {
         navigate("/user", {state: {id: authUser.id, name: authUser.name}})
       }
@@ -163,28 +170,20 @@ const TopPage = (props: Props) => {
     }
 
     const ToUserPage = () => {
-      if (loginUser == null) {
+      if (authUser == undefined) {
         return (
         <LoginForm />
         )
-      } else if (loginUser.photoURL != null){
-        return (
-          <div>
-            <LoginForm />
-          <Link to="/user" state={{id: loginUser}}>ユーザーページへ</Link>
-          <Avatar src={loginUser.photoURL}/>
-          </div>
-        ) 
       } else {
         return (
           <div>
             <LoginForm />
-          <Link to="/user" state={{id: loginUser}}>ユーザーページへ</Link>
-          <Avatar {...stringAvatar(loginUser.displayName?loginUser.displayName:"")} />
+          <h3>{authUser.name}さん，こんにちは</h3>
+          <Button onClick={onSubmit}>ユーザーページへ</Button>
+          <Avatar src={authUser.photo_url}/>
           </div>
-        )
-      }
-    };
+        ) 
+    }};
     
     const UserList = () => {
       return (
@@ -194,19 +193,21 @@ const TopPage = (props: Props) => {
       key={user.id}
       disableGutters={false}
     >
+      <Avatar src={user.photo_url}/>
       <ListItemText primary={user.name} />
     </ListItem>
   ))}
 </List> )};
     return (
       <Box>
-        <h1>トップページ</h1>
+        <h1>トップページです</h1>
           <UserList/>
-        <Button size="large"  component={Link} to="/signup" variant="contained">
+        <Button size="large"  component={Link} to="/signup" variant="contained" >
             サインアップ
         </Button>
         <br/>
         <ToUserPage/>
+        <h1>{authCnd}</h1>
         <MyBar />
       </Box>
     )

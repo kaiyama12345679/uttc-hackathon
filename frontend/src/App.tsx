@@ -19,6 +19,8 @@ export type userInfo = {
   id: string,
   name: string,
   points: number,
+  email_address: string,
+  photo_url: string
 }
 
 let Info: userInfo[];

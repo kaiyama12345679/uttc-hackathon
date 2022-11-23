@@ -21,15 +21,16 @@ import "./App.css";
 import { message, state } from "./User";
 import { useLocation } from "react-router-dom";
 import {URL} from "./App";
-var messages: message[];
 type Props = {
     users: userInfo[],
 }
+var messages: message[];
 
 
 
 const RecievedMessage = (props: Props) => {
-
+    const [changing, setChanging] = useState<boolean>(false);
+    const [Messages, setMessages] = useState<message[]>([]);
     const location = useLocation();
     const messageState = location.state as state;
     const [update, setUpdate] = useState<boolean>(false);
@@ -42,8 +43,8 @@ const RecievedMessage = (props: Props) => {
 
         useEffect(
             () => {
-                messages = [];
                 resStatus = 0;
+                setChanging(true);
               const get = async () => {
                 const response = await fetch(
                   URL + "/recieved",
@@ -58,20 +59,21 @@ const RecievedMessage = (props: Props) => {
                   }
                 );
                 messages = await response.json();
+                setMessages(messages);
                 resStatus = response.status;
-                console.log("submitresStatus: " + resStatus);
                 setUpdate(update? false: true);
+                setChanging(false);
               };
               get();
             }, []);
-    if (messages === undefined) {
+    if (changing == true) {
         return (
             <MDSpinner size={100}/>
         );
     }
     return (
         <div>
-            {messages.map((message: message) => {
+            {Messages.map((message: message) => {
                 const from_user = props.users.find((user) => user.id == message.from_id);
                 const From = () => {
                     if (from_user === undefined) {
