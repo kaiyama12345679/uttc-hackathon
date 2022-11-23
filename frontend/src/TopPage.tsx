@@ -163,28 +163,20 @@ const TopPage = (props: Props) => {
     }
 
     const ToUserPage = () => {
-      if (loginUser == null) {
+      if (authUser == undefined) {
         return (
         <LoginForm />
         )
-      } else if (loginUser.photoURL != null){
-        return (
-          <div>
-            <LoginForm />
-          <Link to="/user" state={{id: loginUser}}>ユーザーページへ</Link>
-          <Avatar src={loginUser.photoURL}/>
-          </div>
-        ) 
       } else {
         return (
           <div>
             <LoginForm />
           <Link to="/user" state={{id: loginUser}}>ユーザーページへ</Link>
-          <Avatar {...stringAvatar(loginUser.displayName?loginUser.displayName:"")} />
+          <Avatar src={authUser.photo_url}/>
           </div>
-        )
-      }
-    };
+        ) 
+      } 
+    }
     
     const UserList = () => {
       return (
