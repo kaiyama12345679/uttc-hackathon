@@ -77,7 +77,6 @@ func TopPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.WriteHeader(http.StatusOK)
 		w.Write(bytes)
 
-	
 	case http.MethodPut:
 		var e string
 		if err := json.NewDecoder(r.Body).Decode(&e); err != nil {
@@ -85,22 +84,22 @@ func TopPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		queStr = fmt.Sprintf("SELECT * FROM users WHERE email_address = %v", e)
+		queStr := fmt.Sprintf("SELECT * FROM users WHERE email_address = %v", e)
 		rows, err := db.Query(queStr)
 		if err != nil {
 			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
-		
+
 		}
 		defer rows.Close()
 		var cnt int
-		
+
 		var userDetail mystruct.UserDetail
 		for rows.Next() {
 			var u mystruct.UserDetail
 			cnt += 1
-			if (cnt >= 2) {
+			if cnt >= 2 {
 				w.WriteHeader(http.StatusConflict)
 				return
 			}
