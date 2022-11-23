@@ -28,7 +28,6 @@ function App() {
   useEffect(
     () => {
       const get = async () => {
-        console.log("init");
         const response = await fetch(
           URL + "/toppage",
           {
@@ -39,7 +38,6 @@ function App() {
           }
         );
         const info: userInfo[] = await response.json();
-        console.log("readed");
         Info = info;
         setUser(info);
         console.table(Info);

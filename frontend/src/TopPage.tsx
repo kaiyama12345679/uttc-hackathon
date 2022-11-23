@@ -100,6 +100,7 @@ const TopPage = (props: Props) => {
 
     useEffect(() => {
       const confirm = async () => {
+        console.log("fetch")
         const response = await fetch(
           URL + "/toppage",
           {
@@ -107,9 +108,13 @@ const TopPage = (props: Props) => {
             headers: {
               "Content-Type": "application/json",
             },
+            body: JSON.stringify(
+              loginUser?loginUser.email:"hoge"
+            )
           }
         );
         const res_status = response.status;
+        console.log("response", response.status);
         if (res_status == 500) {
           alert("問題が発生しました．もう一度やり直してください")
         } else if (res_status == 409) {
@@ -118,7 +123,7 @@ const TopPage = (props: Props) => {
           alert("ユーザが見つかりません．サインアップから登録をお願いいたします。")
         } else {
           setAuthUser(await response.json());
-          console.log(authUser);
+          console.log("authUser",authUser);
         }
       };
       confirm();
@@ -133,7 +138,6 @@ const TopPage = (props: Props) => {
 
     onAuthStateChanged(fireAuth, user => {
       setLoginUser(user);
-      console.log(user);
     });
     const onSubmit = async (id: string, name: string) => {
       if (authUser != undefined) {

@@ -84,7 +84,7 @@ func TopPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		queStr := fmt.Sprintf("SELECT * FROM users WHERE email_address = %v", e)
+		queStr := fmt.Sprintf("SELECT * FROM users WHERE email_address = '%v'", e)
 		rows, err := db.Query(queStr)
 		if err != nil {
 			fmt.Println(err)
