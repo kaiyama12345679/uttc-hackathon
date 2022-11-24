@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/oklog/ulid"
-	"main/struct"
+	mystruct "main/struct"
 	"math/rand"
 	"net/http"
 	"time"
+
+	"github.com/oklog/ulid"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -47,7 +48,9 @@ func PostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		t := time.Now()
 		tokyo, err := time.LoadLocation("Asia/Tokyo")
 		if err != nil {
-			return err
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 		localt := t.In(tokyo)
 		myTime := localt.Format("2006/1/2 15:04:05")
