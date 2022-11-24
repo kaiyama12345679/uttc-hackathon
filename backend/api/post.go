@@ -53,7 +53,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		myTime := localt.Format("2006/1/2 15:04:05")
 		entropy := ulid.Monotonic(rand.New(rand.NewSource(t.UnixNano())), 0)
 		id := ulid.MustNew(ulid.Timestamp(t), entropy).String()
-		res, err := ins.Exec(id, message.FId, message.TId, message.Point, message.Message, myTime.String())
+		res, err := ins.Exec(id, message.FId, message.TId, message.Point, message.Message, myTime)
 		if err != nil {
 			tx.Rollback()
 			fmt.Print(err)
