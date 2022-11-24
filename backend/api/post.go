@@ -45,9 +45,15 @@ func PostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			return
 		}
 		t := time.Now()
+		tokyo, err := time.LoadLocation("Asia/Tokyo")
+		if err != nil {
+			return err
+		}
+		localt := t.In(tokyo)
+		myTime := localt.Format("2006/1/2 15:04:05")
 		entropy := ulid.Monotonic(rand.New(rand.NewSource(t.UnixNano())), 0)
 		id := ulid.MustNew(ulid.Timestamp(t), entropy).String()
-		res, err := ins.Exec(id, message.FId, message.TId, message.Point, message.Message, t.String())
+		res, err := ins.Exec(id, message.FId, message.TId, message.Point, message.Message, myTime.String())
 		if err != nil {
 			tx.Rollback()
 			fmt.Print(err)
